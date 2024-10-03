@@ -2,3 +2,5 @@ venv/
 .idea/
 
 cached_api_responses/
+.env
+locations.yaml

@@ -1,0 +1,14 @@
+# Each location will be included in the summary email
+locations:
+
+  - name: 'Bray Head'
+    coords:
+      latitude: 53.1909
+      longitude: -6.0839
+    info: weather  # Include weather forecast for this location
+
+  - name: 'Bray seafront'
+    coords:
+      latitude: 53.2048
+      longitude: -6.0979
+    info: tide  # Include tide times for this location
