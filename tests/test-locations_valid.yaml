@@ -1,0 +1,11 @@
+- name: 'Bray Head'
+  coords:
+    latitude: 53.1909
+    longitude: -6.0839
+  info: weather  # Get weather forecast for this location
+
+- name: 'Bray seafront'
+  coords:
+    latitude: 53.2048
+    longitude: -6.0979
+  info: tide  # Get tide times for this location

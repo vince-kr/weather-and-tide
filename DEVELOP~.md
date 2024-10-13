@@ -45,3 +45,7 @@ I will want to use TDD (with `unittest`) for summarising the data. Calling APIs 
 ### Configuration
 
 The app requires some static data to do its job: the stormglass.io API key, coordinates of the locations to get data for, and email credentials. All of these represent private information that I would not want to include in a GitHub repo.
+
+## Progress
+
+Let's start small! Call one API, parse the response, and send an automatic email. This will also require some config handling.

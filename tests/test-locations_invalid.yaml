@@ -1,0 +1,7 @@
+locations:
+
+  - name: 12.5
+    coords:
+      latitude: "one point three four"
+      longitude: 844484
+    info: yaknow
