@@ -8,12 +8,10 @@ import yaml
 load_dotenv()
 STORMGLASS_API_KEY = os.getenv('STORMGLASS_API_KEY')
 
-Coords = namedtuple('Coords', ('lat', 'long'))
-
 @dataclass
 class Location:
     name: str
-    coords: Coords
+    coords: tuple[float, float]
     info: str
 
 def load_locations(locations_file: Path) -> tuple[Location, ...]:
@@ -21,6 +19,6 @@ def load_locations(locations_file: Path) -> tuple[Location, ...]:
         raw_locations = yaml.load(lf, Loader=yaml.Loader)
     location_objects: list[Location] = []
     for location in raw_locations:
-        coords = Coords(*location['coords'].values())
+        coords = tuple(location['coords'].values())
         location_objects.append(Location(location['name'], coords, location['info']))
     return tuple(location_objects)
