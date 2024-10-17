@@ -4,3 +4,6 @@ venv/
 cached_api_responses/
 .env
 locations.yaml
+
+weather-tide-email.html
+email_end-result.html

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Weather report - {{today}}</title>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+</head>
+<body>
+    {% for location in locations %}
+    <div class="report block">
+        <h1 class="subtitle">{{location.name}}</h1>
+        <table class="table">
+            {% if location.type == "weather" %}
+            <tr>
+                <th></th>
+                <th>6:00 - 9:00</th>
+                <th>9:00 - 12:00</th>
+                <th>12:00 - 15:00</th>
+                <th>15:00 - 18:00</th>
+            </tr>
+            {% endif %}
+            {% for header, contents in location.rows %}
+            <tr>
+                <th>{{header}}</th>
+                {% for row in contents %}
+                <td>{{row}}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% endfor %}
+</body>
+</html>

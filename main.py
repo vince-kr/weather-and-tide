@@ -13,10 +13,8 @@ STORMGLASS_API_KEY = config_loader.STORMGLASS_API_KEY
 locations = config_loader.load_locations(Path('locations.yaml'))
 
 # Collect some data
-for location in locations:
-    if location.info == 'tide':
-        tide_response = apis.request_tide_times(location.coords, STORMGLASS_API_KEY)
-# weather_data: dict = apis.request_weather_data()
+location = locations[0]
+tide_response = apis.request_tide_times(location.coords, STORMGLASS_API_KEY)
 
 # Format the response
 tide_times: dict = response_formatter.generate_tide_times(tide_response)
