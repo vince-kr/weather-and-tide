@@ -56,7 +56,15 @@ weather_selectors = (
     )
 )
 
-def format_tide_response(tides: dict) -> tuple:
+weather_row_headers = (
+    "Temperature",
+    "Precipitation",
+    "Wind speed",
+    "Wind direction",
+    "Cloud cover",
+)
+
+def generate_tide_rows(tides: dict) -> tuple:
     return tuple(
         (
             tide_datum['type'].capitalize(),
@@ -68,15 +76,15 @@ def format_tide_response(tides: dict) -> tuple:
 def _extract_time_from(datetimestamp: str) -> str:
     return datetimestamp[11:16]
 
-def format_weather_response(weather: dict) -> tuple:
+def generate_weather_rows(weather: dict) -> tuple:
     forecasts = weather['weatherdata']['product']['time']
-    weather, precip = _extract_weather_datums(forecasts[:26])
-    all_datums = _combine_datums((weather, precip))
+    temp_wind, precip = _extract_weather_datums(forecasts[:26])
+    all_datums = _combine_datums((temp_wind, precip))
     average_values = []
     for selector in weather_selectors:
         average_values.append(tuple(_average_value(datum, selector)
                                for datum in itertools.batched(all_datums, n=3)))
-    return tuple(average_values)
+    return weather_row_headers, tuple(average_values)
 
 
 def _extract_weather_datums(all_data: Iterable) -> tuple:

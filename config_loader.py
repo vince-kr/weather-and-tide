@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from dotenv import load_dotenv
-from collections import namedtuple
 import os
 from pathlib import Path
 import yaml

@@ -8,7 +8,7 @@ import xmltodict
 class TestTide(unittest.TestCase):
     def setUp(self):
         self.datetimestamp = "2024-09-26T18:31:00+00:00"
-        with open("cached_api_responses/tide.json") as tf:
+        with open("../cached_api_responses/tide.json") as tf:
             self.response: dict = json.load(tf)
 
     def test_sanity(self):
@@ -34,14 +34,14 @@ class TestTide(unittest.TestCase):
                 ("07:07",),
             ),
         )
-        actual = response_parser.format_tide_response(self.response)
+        actual = response_parser.generate_tide_rows(self.response)
         self.assertEqual(expected, actual)
 
 
 # noinspection PyArgumentList
 class TestWeather(unittest.TestCase):
     def setUp(self):
-        with open('cached_api_responses/weather.xml') as wf:
+        with open('../cached_api_responses/weather.xml') as wf:
             self.response: dict = xmltodict.parse(wf.read())
         self.expected_formatting = (
             (
@@ -337,15 +337,7 @@ class TestWeather(unittest.TestCase):
         actual = tuple(results)
         self.assertEqual(expected, actual)
 
-    def SKIPtest_wthXML(self):
-        """Build a JSON representation of weather data"""
-        forecasts = self.response['weatherdata']['product']['time']
-        weather, precip = response_parser._extract_weather_datums(forecasts[:26])
-        print(weather)
-        with open('really.json', 'w') as rf:
-            json.dump(weather, rf, indent=4)
-
     def test_fullParse(self):
         expected = self.expected_formatting
-        actual = response_parser.format_weather_response(self.response)
+        actual = response_parser.generate_weather_rows(self.response)[1]
         self.assertEqual(expected, actual)
