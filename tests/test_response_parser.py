@@ -38,6 +38,7 @@ class TestTide(unittest.TestCase):
         self.assertEqual(expected, actual)
 
 
+# noinspection PyArgumentList
 class TestWeather(unittest.TestCase):
     def setUp(self):
         with open('cached_api_responses/weather.xml') as wf:
@@ -69,9 +70,9 @@ class TestWeather(unittest.TestCase):
             ),
             (
                 "98.5%",
-                "100.0",
-                "100.0",
-                "100.0",
+                "100.0%",
+                "100.0%",
+                "100.0%",
             ),
         )
         self.input_data_weather = (
@@ -266,6 +267,16 @@ class TestWeather(unittest.TestCase):
         input_thruple = self.input_data_weather[0]
         expected = "13.4° C"
         actual = response_parser._average_value(input_thruple, selector)
+        self.assertEqual(expected, actual)
+
+    def test_givenHighPrecisionFloat_returnOneDecimalStr(self):
+        expected = "3.5"
+        actual = response_parser._avg_and_format((2.12345, 3.56789, 4.86424), lambda x: x)
+        self.assertEqual(expected, actual)
+
+    def test_givenMetresPerSecond_convertKmperHour(self):
+        expected = "21.6"
+        actual = response_parser._avg_and_format((5, 6, 7), lambda x: x*3.6)
         self.assertEqual(expected, actual)
 
     def test_givenThrupleOfData_returnMostCommonString(self):

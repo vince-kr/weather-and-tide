@@ -1,6 +1,8 @@
 from collections import Counter, namedtuple
 from collections.abc import Iterable
 import itertools
+from typing import Callable, Sequence
+
 """
 All of the below may be useful once I start implementing weather
 import xml.etree.ElementTree as ET
@@ -20,23 +22,27 @@ class Forecast:
         self.wind_speed = forecast[0][2].attrib['mps']
 """
 
-Selector = namedtuple('Selector', ['data_type', 'key', 'symbol'])
+Selector = namedtuple('Selector',
+                      'data_type key symbol conversion',
+                      defaults=[lambda x: x])
 
+# noinspection PyArgumentList
 weather_selectors = (
     Selector(
         "temperature",
         "@value",
-        "° C"
+        "° C",
     ),
     Selector(
         "precipitation",
         "@value",
-        "mm"
+        " mm"
     ),
     Selector(
         "windSpeed",
         "@mps",
-        " m/s"
+        " km/h",
+        lambda x: x * 3.6
     ),
     Selector(
         "windDirection",
@@ -66,12 +72,11 @@ def format_weather_response(weather: dict) -> tuple:
     forecasts = weather['weatherdata']['product']['time']
     weather, precip = _extract_weather_datums(forecasts[:26])
     all_datums = _combine_datums((weather, precip))
-    batches = itertools.batched(all_datums, n=3)
-    average_results = []
-    for datum in batches:
-        average_results.append(tuple(_average_value(datum, selector)
-                               for selector in weather_selectors))
-    return tuple(average_results)
+    average_values = []
+    for selector in weather_selectors:
+        average_values.append(tuple(_average_value(datum, selector)
+                               for datum in itertools.batched(all_datums, n=3)))
+    return tuple(average_values)
 
 
 def _extract_weather_datums(all_data: Iterable) -> tuple:
@@ -95,7 +100,11 @@ def _average_value(data: tuple, selector: Selector) -> str:
     pertinent_values = [point[selector.data_type][selector.key]
                         for point in data]
     try:
-        val = sum(float(point) for point in pertinent_values) / len(data)
+        fmt = _avg_and_format(pertinent_values, selector.conversion)
     except ValueError:
-        val = Counter(pertinent_values).most_common()[0][0]
-    return f'{val}{selector.symbol}'
+        fmt = Counter(pertinent_values).most_common()[0][0]
+    return f'{fmt}{selector.symbol}'
+
+def _avg_and_format(values: Sequence, conversion: Callable) -> str:
+    average = sum(float(point) for point in values) / len(values)
+    return f'{conversion(average):.1f}'
