@@ -14,8 +14,8 @@ class TestTide(unittest.TestCase):
     def test_sanity(self):
         self.assertTrue(True)
 
-    def test_givenBigDateTimeString_extractOnlyTime(self):
-        expected = "18:31"
+    def test_givenBigDateTimeString_extractOnlyTimeInLocalZone(self):
+        expected = "19:31"
         actual = response_parser._extract_time_from(self.datetimestamp)
         self.assertEqual(expected, actual)
 
@@ -23,15 +23,15 @@ class TestTide(unittest.TestCase):
         expected = (
             (
                 "Low",
-                ("18:31",),
+                ("19:31",),
             ),
             (
                 "High",
-                ("00:49",),
+                ("01:49",),
             ),
             (
                 "Low",
-                ("07:07",),
+                ("08:07",),
             ),
         )
         actual = response_parser.generate_tide_rows(self.response)
