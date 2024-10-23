@@ -22,6 +22,34 @@ class Forecast:
 
 Selector = namedtuple('Selector', ['data_type', 'key', 'symbol'])
 
+weather_selectors = (
+    Selector(
+        "temperature",
+        "@value",
+        "° C"
+    ),
+    Selector(
+        "precipitation",
+        "@value",
+        "mm"
+    ),
+    Selector(
+        "windSpeed",
+        "@mps",
+        " m/s"
+    ),
+    Selector(
+        "windDirection",
+        "@name",
+        ""
+    ),
+    Selector(
+        "cloudiness",
+        "@percent",
+        "%"
+    )
+)
+
 def format_tide_response(tides: dict) -> tuple:
     return tuple(
         (
@@ -37,10 +65,13 @@ def _extract_time_from(datetimestamp: str) -> str:
 def format_weather_response(weather: dict) -> tuple:
     forecasts = weather['weatherdata']['product']['time']
     weather, precip = _extract_weather_datums(forecasts[:26])
-    weather_batches = itertools.batched(weather, n=3)
-    precip_batches = itertools.batched(precip, n=3)
-    for weather_point, precip_point in zip(weather_batches, precip_batches):
-        pass
+    all_datums = _combine_datums((weather, precip))
+    batches = itertools.batched(all_datums, n=3)
+    average_results = []
+    for datum in batches:
+        average_results.append(tuple(_average_value(datum, selector)
+                               for selector in weather_selectors))
+    return tuple(average_results)
 
 
 def _extract_weather_datums(all_data: Iterable) -> tuple:
@@ -48,14 +79,17 @@ def _extract_weather_datums(all_data: Iterable) -> tuple:
     - all even indices from the iterable minus the last one
     - all odd indices from the iterable minus the first one
     """
-    evens = tuple(point['location'] for idx, point in enumerate(all_data[:-2])
+    weather = tuple(point['location'] for idx, point in enumerate(all_data[:-2])
                   if _is_even(idx))
-    odds = tuple(point['location'] for idx, point in enumerate(all_data[2:])
+    precip = tuple(point['location'] for idx, point in enumerate(all_data[2:])
                  if not _is_even(idx))
-    return evens, odds
+    return weather, precip
 
 def _is_even(number: int) -> bool:
     return number % 2 == 0
+
+def _combine_datums(datums: tuple) -> tuple:
+    return tuple(weather | precip for weather, precip in zip(*datums))
 
 def _average_value(data: tuple, selector: Selector) -> str:
     pertinent_values = [point[selector.data_type][selector.key]

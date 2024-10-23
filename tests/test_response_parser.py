@@ -50,7 +50,7 @@ class TestWeather(unittest.TestCase):
                 "7.5° C",
             ),
             (
-                "0 mm",
+                "0.0 mm",
                 "0.7 mm",
                 "1.7 mm",
                 "2.2 mm",
@@ -74,7 +74,7 @@ class TestWeather(unittest.TestCase):
                 "100.0",
             ),
         )
-        self.input_data = (
+        self.input_data_weather = (
             (
                 {
                     "temperature": {
@@ -154,6 +154,59 @@ class TestWeather(unittest.TestCase):
                 },
             )
         )
+        self.input_data_precip = (
+            (
+                {
+                    "precipitation": {
+                        "@value": "2"
+                    }
+                },
+                {
+                    "precipitation": {
+                        "@value": "3"
+                    }
+                },
+                {
+                    "precipitation": {
+                        "@value": "4"
+                    }
+                },
+            ),
+            (
+                {
+                    "precipitation": {
+                        "@value": "2"
+                    }
+                },
+                {
+                    "precipitation": {
+                        "@value": "3"
+                    }
+                },
+                {
+                    "precipitation": {
+                        "@value": "4"
+                    }
+                },
+            ),
+            (
+                {
+                    "precipitation": {
+                        "@value": "2"
+                    }
+                },
+                {
+                    "precipitation": {
+                        "@value": "3"
+                    }
+                },
+                {
+                    "precipitation": {
+                        "@value": "4"
+                    }
+                },
+            )
+        )
 
     def test_sanity(self):
         self.assertTrue(True)
@@ -164,13 +217,53 @@ class TestWeather(unittest.TestCase):
         actual = response_parser._extract_weather_datums(input_data)
         self.assertEqual(expected, actual)
 
+    def test_givenTwoTuplesOfDicts_returnSingleTupleCombined(self):
+        double_tuple = self.input_data_weather[0], self.input_data_precip[0]
+        expected = (
+            {
+                "temperature": {
+                    "@unit": "12.4"
+                },
+                "windDirection": {
+                    "@name": "N"
+                },
+                "precipitation": {
+                    "@value": "2"
+                }
+            },
+            {
+                "temperature": {
+                    "@unit": "13.4"
+                },
+                "windDirection": {
+                    "@name": "N"
+                },
+                "precipitation": {
+                    "@value": "3"
+                }
+            },
+            {
+                "temperature": {
+                    "@unit": "14.4"
+                },
+                "windDirection": {
+                    "@name": "N"
+                },
+                "precipitation": {
+                    "@value": "4"
+                }
+            },
+        )
+        actual = response_parser._combine_datums(double_tuple)
+        self.assertEqual(expected, actual)
+
     def test_givenThrupleOfData_returnAverageOfNumericalFields(self):
         selector = response_parser.Selector(
             data_type="temperature",
             key="@unit",
             symbol="° C"
         )
-        input_thruple = self.input_data[0]
+        input_thruple = self.input_data_weather[0]
         expected = "13.4° C"
         actual = response_parser._average_value(input_thruple, selector)
         self.assertEqual(expected, actual)
@@ -181,7 +274,7 @@ class TestWeather(unittest.TestCase):
             "@name",
             ""
         )
-        input_thruple = self.input_data[0]
+        input_thruple = self.input_data_weather[0]
         expected = "N"
         actual = response_parser._average_value(input_thruple, selector)
         self.assertEqual(expected, actual)
@@ -198,7 +291,7 @@ class TestWeather(unittest.TestCase):
             "13.4° C",
         )
         actual = tuple(response_parser._average_value(batch, selector)
-                       for batch in self.input_data)
+                       for batch in self.input_data_weather)
         self.assertEqual(expected, actual)
 
     def test_givenMultipleSelectors_returnMultipleTuples(self):
@@ -229,7 +322,7 @@ class TestWeather(unittest.TestCase):
         results = []
         for sel in selectors:
             results.append(tuple(response_parser._average_value(batch, sel)
-                                 for batch in self.input_data))
+                                 for batch in self.input_data_weather))
         actual = tuple(results)
         self.assertEqual(expected, actual)
 
@@ -240,3 +333,8 @@ class TestWeather(unittest.TestCase):
         print(weather)
         with open('really.json', 'w') as rf:
             json.dump(weather, rf, indent=4)
+
+    def test_fullParse(self):
+        expected = self.expected_formatting
+        actual = response_parser.format_weather_response(self.response)
+        self.assertEqual(expected, actual)
