@@ -3,8 +3,6 @@ from collections import Counter, namedtuple
 from collections.abc import Iterable
 import itertools
 from typing import Callable, Sequence
-from zoneinfo import ZoneInfo
-
 
 Selector = namedtuple('Selector',
                       'data_type key symbol conversion',
@@ -56,7 +54,7 @@ def generate_weather_rows(weather: dict) -> tuple:
     for selector in weather_selectors:
         average_values.append(tuple(_average_value(datum, selector)
                                for datum in itertools.batched(all_datums, n=3)))
-    return weather_row_headers, tuple(average_values)
+    return zip(weather_row_headers, tuple(average_values))
 
 
 def _extract_weather_datums(all_data: Iterable) -> tuple:
