@@ -1,3 +1,4 @@
+from config_loader import SEND_EMAIL_ADDRESS, SEND_EMAIL_PASSWORD
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -5,7 +6,7 @@ from email.mime.text import MIMEText
 def send_email(mail_body: str, todays_date: str) -> None:
     msg = MIMEMultipart('alternative')
     msg['Subject'] = f'Weather report - {todays_date}'
-    msg['From'] = 'weather@krijnsen.com'
+    msg['From'] = SEND_EMAIL_ADDRESS
     msg['To'] = 'vince@krijnsen.com'
 
     html_contents = MIMEText(mail_body, 'html')
@@ -13,5 +14,5 @@ def send_email(mail_body: str, todays_date: str) -> None:
 
     with smtplib.SMTP('smtp.greenhost.nl', 587) as greenhost:
         greenhost.starttls()
-        greenhost.login('weather@krijnsen.com', 'BenWe4th')
+        greenhost.login(SEND_EMAIL_ADDRESS, SEND_EMAIL_PASSWORD)
         greenhost.send_message(msg)

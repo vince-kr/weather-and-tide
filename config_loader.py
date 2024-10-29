@@ -6,6 +6,8 @@ import yaml
 
 load_dotenv()
 STORMGLASS_API_KEY = os.getenv('STORMGLASS_API_KEY')
+SEND_EMAIL_ADDRESS = os.getenv('SENDER_EMAIL_ADDRESS')
+SEND_EMAIL_PASSWORD = os.getenv('SENDER_EMAIL_PASSWORD')
 
 @dataclass
 class Location:
