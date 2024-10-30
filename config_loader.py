@@ -20,6 +20,6 @@ def load_locations(locations_file: Path) -> tuple[Location, ...]:
         raw_locations = yaml.load(lf, Loader=yaml.Loader)
     location_objects: list[Location] = []
     for location in raw_locations:
-        coords = tuple(location['coords'].values())
+        coords = location['coords'].values()
         location_objects.append(Location(location['name'], coords, location['info']))
     return tuple(location_objects)
