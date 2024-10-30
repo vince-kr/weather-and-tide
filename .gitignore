@@ -1,5 +1,6 @@
 venv/
 .idea/
+**/__pycache__
 
 cached_api_responses/
 .env
