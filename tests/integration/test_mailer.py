@@ -15,8 +15,8 @@ class TestSendEmail(unittest.TestCase):
             tide_response = json.load(tr)
         with open('../cached_api_responses/weather.xml', 'rb') as wr:
             weather_response = xmltodict.parse(wr)
-        tide_rows = response_parser.generate_tide_rows(tide_response)
-        weather_rows = response_parser.generate_weather_rows(weather_response)
+        tide_rows = response_parser._generate_tide_rows(tide_response)
+        weather_rows = response_parser._generate_weather_rows(weather_response)
         email_data = {
             'locations': [
                 {

@@ -2,9 +2,11 @@ venv/
 .idea/
 **/__pycache__
 
-cached_api_responses/
 .env
+cached_api_responses/
 locations.yaml
 
 weather-tide-email.html
 generated_email.html
+todo*
+

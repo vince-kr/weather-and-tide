@@ -46,7 +46,13 @@ weather_row_headers = (
     "Cloud cover",
 )
 
-def generate_weather_rows(weather: dict) -> tuple:
+def parse_forecast(forecast: dict) -> tuple:
+    if 'weatherdata' in forecast:
+        return _generate_weather_rows(forecast)
+    else:
+        return _generate_tide_rows(forecast)
+
+def _generate_weather_rows(weather: dict) -> tuple:
     forecasts = weather['weatherdata']['product']['time']
     temp_wind, precip = _extract_weather_datums(forecasts[:26])
     all_datums = _combine_datums((temp_wind, precip))
@@ -87,7 +93,7 @@ def _avg_and_format(values: Sequence, conversion: Callable) -> str:
     average = sum(float(point) for point in values) / len(values)
     return f'{conversion(average):.1f}'
 
-def generate_tide_rows(tides: dict) -> tuple:
+def _generate_tide_rows(tides: dict) -> tuple:
     return tuple(
         (
             tide_datum['type'].capitalize(),
