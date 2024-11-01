@@ -2,7 +2,8 @@
 #################  WEATHER  AND  TIDE  #################
 ########################################################
 import api_caller
-import config_loader
+from concurrent.futures import ThreadPoolExecutor
+import config
 import datetime
 import email_generator
 import mailer
@@ -10,12 +11,15 @@ from pathlib import Path
 import response_parser
 
 # Load configuration
-API_KEY = config_loader.STORMGLASS_API_KEY
-locations = config_loader.load_locations(Path('locations.yaml'))
+API_KEY = config.STORMGLASS_API_KEY
+locations = config.load_locations(Path('locations.yaml'))
 
-# Fetch and format forecast data
-forecasts = (api_caller.fetch_forecast(location, API_KEY) for location in locations)
-fmt_rows = (response_parser.parse_forecast(forecast) for forecast in forecasts)
+# Fetch and parse forecasts on separate threads
+with ThreadPoolExecutor() as executor:
+    forecast_futures = [executor.submit(api_caller.fetch_forecast, location, API_KEY)
+                        for location in locations]
+    fmt_rows = [response_parser.parse_forecast(fc_future.result())
+                for fc_future in forecast_futures]
 
 # Generate email
 email_data = { 'locations': [] }
