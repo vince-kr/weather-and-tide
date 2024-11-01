@@ -4,6 +4,8 @@ import os
 from pathlib import Path
 import yaml
 
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+
 load_dotenv()
 STORMGLASS_API_KEY = os.getenv('STORMGLASS_API_KEY')
 SEND_EMAIL_ADDRESS = os.getenv('SENDER_EMAIL_ADDRESS')

@@ -1,4 +1,4 @@
-import config_loader
+import config
 import unittest
 from pathlib import Path
 
@@ -11,8 +11,8 @@ class TestLoadingLocations(unittest.TestCase):
         self.assertTrue(1)
 
     def test_whenLocationsLoaded_thenAccessLocationAttributes(self):
-        locations = config_loader.load_locations(self.valid_locations)
+        locations = config.load_locations(self.valid_locations)
         first_location = locations[0]
         expected = 'Bray Head', (53.1909, -6.0839), 'weather'
-        actual = first_location.name, first_location.coords, first_location.info
+        actual = first_location.name, tuple(first_location.coords), first_location.info
         self.assertEqual(expected, actual)

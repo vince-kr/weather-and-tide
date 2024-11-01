@@ -1,4 +1,4 @@
-from config_loader import Location
+from config import Location
 from datetime import date, timedelta
 import requests
 import xmltodict

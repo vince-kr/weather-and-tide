@@ -1,4 +1,4 @@
-from config_loader import SEND_EMAIL_ADDRESS, SEND_EMAIL_PASSWORD
+from config import SEND_EMAIL_ADDRESS, SEND_EMAIL_PASSWORD
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
