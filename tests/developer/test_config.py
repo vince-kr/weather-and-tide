@@ -1,11 +1,14 @@
-import config
 import unittest
 from pathlib import Path
 
+import config
+
 class TestLoadingLocations(unittest.TestCase):
     def setUp(self):
-        self.valid_locations = Path('../test-locations_valid.yaml')
-        self.invalid_locations = Path('../test-locations_invalid.yaml')
+        self.valid_locations = Path(
+            config.PROJECT_ROOT + '/tests/test-locations_valid.yaml')
+        self.invalid_locations = Path(
+            config.PROJECT_ROOT + '/tests/test-locations_invalid.yaml')
 
     def test_sanity(self):
         self.assertTrue(1)

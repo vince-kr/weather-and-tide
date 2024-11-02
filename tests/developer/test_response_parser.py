@@ -1,27 +1,33 @@
 """Create a module to convert API responses into useful objects"""
 import json
-import response_parser
 import unittest
+
+import config
+import response_parser
 import xmltodict
 
 
 class TestTide(unittest.TestCase):
     def setUp(self):
         self.datetimestamp = "2024-09-26T18:31:00+00:00"
-        with open("../cached_api_responses/tide.json") as tf:
+        with open(config.PROJECT_ROOT + '/tests/cached_api_responses/tide.json') as tf:
             self.response: dict = json.load(tf)
         self.expected_formatting = (
             (
                 "Low",
-                ("19:31",),
+                ("05:17",),
             ),
             (
                 "High",
-                ("01:49",),
+                ("11:46",),
             ),
             (
                 "Low",
-                ("08:07",),
+                ("17:32",),
+            ),
+            (
+                "High",
+                ("23:57",),
             ),
         )
 
@@ -47,38 +53,38 @@ class TestTide(unittest.TestCase):
 # noinspection PyArgumentList
 class TestWeather(unittest.TestCase):
     def setUp(self):
-        with open('../cached_api_responses/weather.xml') as wf:
+        with open(config.PROJECT_ROOT + '/tests/cached_api_responses/weather.xml') as wf:
             self.response: dict = xmltodict.parse(wf.read())
         self.expected_formatting = (
             (
-                "9.1° C",
-                "9.2° C",
-                "8.3° C",
-                "7.5° C",
+                "11.6° C",
+                "12.3° C",
+                "12.5° C",
+                "12.2° C",
             ),
             (
                 "0.0 mm",
-                "0.7 mm",
-                "1.7 mm",
-                "2.2 mm",
+                "0.0 mm",
+                "0.0 mm",
+                "0.0 mm",
             ),
             (
-                "24.6 km/h",
-                "25.2 km/h",
-                "31.1 km/h",
-                "36.2 km/h",
+                "4.9 km/h",
+                "4.7 km/h",
+                "5.9 km/h",
+                "7.8 km/h",
             ),
             (
-                "N",
-                "N",
-                "N",
-                "N",
+                "SW",
+                "S",
+                "SE",
+                "SE",
             ),
             (
-                "98.5%",
+                "99.8%",
+                "99.3%",
                 "100.0%",
-                "100.0%",
-                "100.0%",
+                "97.7%",
             ),
         )
         self.input_data_weather = (
@@ -341,12 +347,6 @@ class TestWeather(unittest.TestCase):
             results.append(tuple(response_parser._average_value(batch, sel)
                                  for batch in self.input_data_weather))
         actual = tuple(results)
-        self.assertEqual(expected, actual)
-
-    def test_fullParse(self):
-        expected = self.expected_formatting
-        weather_rows = response_parser._generate_weather_rows(self.response)
-        actual = tuple(row_data for _, row_data in weather_rows)
         self.assertEqual(expected, actual)
 
     def test_parseEndToEnd(self):

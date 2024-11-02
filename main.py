@@ -16,8 +16,8 @@ locations = config.load_locations(Path('locations.yaml'))
 
 # Fetch and parse forecasts on separate threads
 with ThreadPoolExecutor() as executor:
-    forecast_futures = [executor.submit(api_caller.fetch_forecast, location, API_KEY)
-                        for location in locations]
+    forecast_futures = (executor.submit(api_caller.fetch_forecast, location, API_KEY)
+                        for location in locations)
     fmt_rows = [response_parser.parse_forecast(fc_future.result())
                 for fc_future in forecast_futures]
 
