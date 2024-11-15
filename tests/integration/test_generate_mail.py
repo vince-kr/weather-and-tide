@@ -15,10 +15,10 @@ class TestResponseParse(unittest.TestCase):
         cache_files = config.PROJECT_ROOT + '/tests/cached_api_responses'
         weather_cache = cache_files + '/weather.xml'
         with open(weather_cache, 'rb') as wc:
-            self.weather: dict = xmltodict.parse(wc)
+            self.weather = xmltodict.parse(wc)
         tide_cache = cache_files + '/tide.json'
         with open(tide_cache) as tc:
-            self.tide: dict = json.load(tc)
+            self.tide = json.load(tc)
 
     def test_tideResponseToMail(self):
         fmt_rows = [response_parser.parse_forecast(forecast)
@@ -33,7 +33,7 @@ class TestResponseParse(unittest.TestCase):
             }
             email_data['locations'].append(location_summary)
 
-        html_email: str = email_generator.generate_email(email_data)
+        html_email = email_generator.generate_email(email_data)
         email_file = config.PROJECT_ROOT + '/tests/integration/generated_email.html'
         with open(email_file, 'w') as ef:
             ef.write(html_email)

@@ -22,8 +22,8 @@ else:
 # Ensured that a venv exists; install dependencies
 pip_env_executable = Path(venv_path / 'bin' / 'pip')
 with open('requirements.txt') as rf:
-    all_requirements = rf.read().split('\n')
-all_requirements = (re.sub('==.*', '', req) for req in all_requirements)
+    raw_requirements = rf.read().split('\n')
+all_requirements = (re.sub('==.*', '', req) for req in raw_requirements)
 pip_list_output = subprocess.run((pip_env_executable, 'list'),
                                  capture_output=True).stdout
 installed = pip_list_output.decode('utf-8')

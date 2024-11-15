@@ -1,6 +1,5 @@
 import datetime
 from collections import Counter, namedtuple
-from collections.abc import Iterable
 import itertools
 from typing import Callable, Sequence
 
@@ -46,13 +45,13 @@ weather_row_headers = (
     "Cloud cover",
 )
 
-def parse_forecast(forecast: dict) -> tuple:
+def parse_forecast(forecast: dict) -> zip|tuple:
     if 'weatherdata' in forecast:
         return _generate_weather_rows(forecast)
     else:
         return _generate_tide_rows(forecast)
 
-def _generate_weather_rows(weather: dict) -> tuple:
+def _generate_weather_rows(weather: dict) -> zip:
     forecasts = weather['weatherdata']['product']['time']
     temp_wind, precip = _extract_weather_datums(forecasts[:26])
     all_datums = _combine_datums((temp_wind, precip))
@@ -63,7 +62,7 @@ def _generate_weather_rows(weather: dict) -> tuple:
     return zip(weather_row_headers, tuple(average_values))
 
 
-def _extract_weather_datums(all_data: Iterable) -> tuple:
+def _extract_weather_datums(all_data: Sequence) -> tuple:
     """Given an iterable, return a 2-tuple of tuples that contain
     - all even indices from the iterable minus the last one
     - all odd indices from the iterable minus the first one
