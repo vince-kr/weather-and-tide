@@ -20,7 +20,7 @@ class TestApiResponses(unittest.TestCase):
         request_object = api_caller._build_tide_request(self.coords, self.api_key)
         response = requests.get(**request_object)
         self.assertTrue(response.ok)
-        body: dict = response.json()
+        body = response.json()
         self.assertTrue('data' in body)
         self.assertTrue(len(body['data']) > 0)
 
@@ -28,6 +28,6 @@ class TestApiResponses(unittest.TestCase):
         request_object = api_caller._build_weather_request(self.coords)
         response = requests.get(**request_object)
         self.assertTrue(response.ok)
-        body: dict = xmltodict.parse(response.content)
+        body = xmltodict.parse(response.content)
         self.assertTrue('weatherdata' in body)
         self.assertTrue(len(body['weatherdata']) > 0)

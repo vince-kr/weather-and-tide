@@ -47,6 +47,7 @@ def _fetch_weather_forecast(coords: tuple[float, float]) -> dict | None:
     response = requests.get(**request_object)
     if response.ok:
         return xmltodict.parse(response.content)
+    return None
 
 def _fetch_tide_forecast(
         coords: tuple[float, float],
@@ -56,3 +57,4 @@ def _fetch_tide_forecast(
     response = requests.get(**request_object)
     if response.ok:
         return response.json()
+    return None

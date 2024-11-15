@@ -18,11 +18,15 @@ locations = config.load_locations(Path('locations.yaml'))
 with ThreadPoolExecutor() as executor:
     forecast_futures = (executor.submit(api_caller.fetch_forecast, location, API_KEY)
                         for location in locations)
-    fmt_rows = [response_parser.parse_forecast(fc_future.result())
-                for fc_future in forecast_futures]
+    fmt_rows = []
+    for fc_future in forecast_futures:
+        fc_result = fc_future.result()
+        if fc_result:
+            forecast = response_parser.parse_forecast(fc_result)
+            fmt_rows.append(forecast)
 
 # Generate email
-email_data = { 'locations': [] }
+email_data: dict[str, list] = { 'locations': [] }
 for location, row_data in zip(locations, fmt_rows):
     location_summary = {
         'name': location.name,

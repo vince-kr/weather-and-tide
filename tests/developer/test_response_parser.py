@@ -11,7 +11,7 @@ class TestTide(unittest.TestCase):
     def setUp(self):
         self.datetimestamp = "2024-09-26T18:31:00+00:00"
         with open(config.PROJECT_ROOT + '/tests/cached_api_responses/tide.json') as tf:
-            self.response: dict = json.load(tf)
+            self.response = json.load(tf)
         self.expected_formatting = (
             (
                 "Low",
@@ -54,7 +54,7 @@ class TestTide(unittest.TestCase):
 class TestWeather(unittest.TestCase):
     def setUp(self):
         with open(config.PROJECT_ROOT + '/tests/cached_api_responses/weather.xml') as wf:
-            self.response: dict = xmltodict.parse(wf.read())
+            self.response = xmltodict.parse(wf.read())
         self.expected_formatting = (
             (
                 "11.6° C",
