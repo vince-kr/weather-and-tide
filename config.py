@@ -18,6 +18,16 @@ class Location:
     info: str
 
 def load_locations(locations_file: Path) -> tuple[Location, ...]:
+    """
+    Load location data from a YAML file and return it as a tuple of Location objects.
+
+    Args:
+        locations_file (Path): The path to the YAML file containing location data.
+
+    Returns:
+        tuple[Location, ...]: A tuple of Location objects, each representing a location
+        with a name, coordinates, and the type of information to fetch.
+    """
     with open(locations_file) as lf:
         raw_locations = yaml.load(lf, Loader=yaml.Loader)
     location_objects: list[Location] = []

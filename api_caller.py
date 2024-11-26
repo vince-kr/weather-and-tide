@@ -5,6 +5,7 @@ import xmltodict
 
 TIDES_URL = 'https://api.stormglass.io/v2/tide/extremes/point'
 WEATHER_URL = 'http://metwdb-openaccess.ichec.ie/metno-wdb2ts/locationforecast'
+WEATHER_URL = 'http://openaccess.pf.api.met.ie/metno-wdb2ts/locationforecast'
 
 def fetch_forecast(location: Location, api_key: str) -> dict | None:
     match location.info:

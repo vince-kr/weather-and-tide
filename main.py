@@ -1,6 +1,8 @@
 ########################################################
 #################  WEATHER  AND  TIDE  #################
 ########################################################
+from functools import partial
+
 import api_caller
 from concurrent.futures import ThreadPoolExecutor
 import config
@@ -16,14 +18,9 @@ locations = config.load_locations(Path('locations.yaml'))
 
 # Fetch and parse forecasts on separate threads
 with ThreadPoolExecutor() as executor:
-    forecast_futures = (executor.submit(api_caller.fetch_forecast, location, API_KEY)
-                        for location in locations)
-    fmt_rows = []
-    for fc_future in forecast_futures:
-        fc_result = fc_future.result()
-        if fc_result:
-            forecast = response_parser.parse_forecast(fc_result)
-            fmt_rows.append(forecast)
+    fetch_with_api_key = partial(api_caller.fetch_forecast, api_key=STORMGLASS_API_KEY)
+    forecasts = executor.map(fetch_with_api_key, locations)
+    fmt_rows = (response_parser.parse_forecast(forecast) for forecast in forecasts)
 
 # Generate email
 email_data: dict[str, list] = { 'locations': [] }
