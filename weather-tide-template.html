@@ -7,6 +7,10 @@
 </head>
 <body>
 <div class="container m-2">
+    <div class="moon block">
+        <h1 class="subtitle">Moon Phase</h1>
+        <p>{{ moon_phase }}</p>
+    </div>
     {% for location in locations %}
     <div class="report block">
         <h1 class="subtitle">{{location.name}}</h1>

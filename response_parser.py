@@ -104,3 +104,7 @@ def _generate_tide_rows(tides: dict) -> tuple:
 def _extract_time_from(datetimestamp: str) -> str:
     utc_time = datetime.datetime.fromisoformat(datetimestamp)
     return utc_time.astimezone(tz=None).strftime('%H:%M')
+
+
+def format_moon_phase(phase_data: dict) -> str:
+    return f"{phase_data['phaseEmoji']} {phase_data['phase']}"

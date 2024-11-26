@@ -3,9 +3,21 @@ from datetime import date, timedelta
 import requests
 import xmltodict
 
+MOON_URL = "https://api.apiverve.com/v1/moonphases?today=true"
 TIDES_URL = 'https://api.stormglass.io/v2/tide/extremes/point'
-WEATHER_URL = 'http://metwdb-openaccess.ichec.ie/metno-wdb2ts/locationforecast'
 WEATHER_URL = 'http://openaccess.pf.api.met.ie/metno-wdb2ts/locationforecast'
+
+def fetch_moon_phase(api_key: str) -> dict | None:
+    request_object = {
+        'url': MOON_URL,
+        'headers': {
+            'x-api-key': api_key
+        }
+    }
+    response = requests.get(**request_object)
+    if response.ok:
+        return response.json()["data"]
+    return None
 
 def fetch_forecast(location: Location, api_key: str) -> dict | None:
     match location.info:
