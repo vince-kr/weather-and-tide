@@ -7,7 +7,7 @@ def send_email(mail_body: str, todays_date: str) -> None:
     msg = MIMEMultipart('alternative')
     msg['Subject'] = f'Weather report - {todays_date}'
     msg['From'] = SEND_EMAIL_ADDRESS
-    msg['To'] = 'vince@krijnsen.com'
+    msg['To'] = 'pepijn@krijnsen.com; johanna@krijnsen.com'
 
     html_contents = MIMEText(mail_body, 'html')
     msg.attach(html_contents)
