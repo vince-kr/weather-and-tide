@@ -10,8 +10,8 @@ import xmltodict
 
 class TestResponseParse(unittest.TestCase):
     def setUp(self):
-        locations_file = config.PROJECT_ROOT + '/example.locations.yaml'
-        self.locations = config.load_locations(locations_file)
+        config_file = config.PROJECT_ROOT + '/example.config.yaml'
+        self.user_config = config.load_config(config_file)
         cache_files = config.PROJECT_ROOT + '/tests/cached_api_responses'
         moon_cache = cache_files + '/moon.json'
         with open(moon_cache) as mc:
@@ -29,7 +29,7 @@ class TestResponseParse(unittest.TestCase):
                     for forecast in (self.weather, self.tide)]
 
         email_data = { "moon_phase": moon_phase_fmt, 'locations': [] }
-        for location, row_data in zip(self.locations, fmt_rows):
+        for location, row_data in zip(self.user_config.locations, fmt_rows):
             location_summary = {
                 'name': location.name,
                 'type': location.info,

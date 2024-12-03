@@ -15,7 +15,7 @@ class TestApiCaller(unittest.TestCase):
 
     def test_generateWeatherRequestObject(self):
         coords = (53.2048, -6.0979)
-        base_url = 'http://metwdb-openaccess.ichec.ie/metno-wdb2ts/locationforecast'
+        base_url = 'http://openaccess.pf.api.met.ie/metno-wdb2ts/locationforecast'
         expected = {
             'url': base_url + f'?lat=53.2048;long=-6.0979'
         }

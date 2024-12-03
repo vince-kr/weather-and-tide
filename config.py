@@ -18,21 +18,27 @@ class Location:
     coords: tuple[float, float]
     info: str
 
-def load_locations(locations_file: Path) -> tuple[Location, ...]:
+@dataclass
+class Config:
+    email_recipients: list[str]
+    locations: list[Location]
+
+def load_config(config_file: Path) -> Config:
     """
     Load location data from a YAML file and return it as a tuple of Location objects.
 
     Args:
-        locations_file (Path): The path to the YAML file containing location data.
+        config_file (Path): The path to the YAML file containing location data.
 
     Returns:
         tuple[Location, ...]: A tuple of Location objects, each representing a location
         with a name, coordinates, and the type of information to fetch.
     """
-    with open(locations_file) as lf:
-        raw_locations = yaml.load(lf, Loader=yaml.Loader)
+    with open(config_file) as lf:
+        config = yaml.load(lf, Loader=yaml.Loader)
+    email_recipients: list[str] = config['recipients']
     location_objects: list[Location] = []
-    for location in raw_locations:
+    for location in config['locations']:
         coords = location['coords'].values()
         location_objects.append(Location(location['name'], coords, location['info']))
-    return tuple(location_objects)
+    return Config(email_recipients, location_objects)

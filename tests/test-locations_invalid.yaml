@@ -1,5 +1,6 @@
+recipients:
+  - no@email.com
 locations:
-
   - name: 12.5
     coords:
       latitude: "one point three four"

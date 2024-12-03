@@ -15,7 +15,7 @@ import response_parser
 # Load configuration
 APIVERVE_API_KEY = config.APIVERVE_API_KEY
 STORMGLASS_API_KEY = config.STORMGLASS_API_KEY
-locations = config.load_locations(Path('locations.yaml'))
+user_config = config.load_config(Path('config.yaml'))
 
 # Fetch the current phase of the moon
 moon_phase = api_caller.fetch_moon_phase(APIVERVE_API_KEY)
@@ -27,12 +27,15 @@ else:
 # Fetch and parse forecasts on separate threads
 with ThreadPoolExecutor() as executor:
     fetch_with_api_key = partial(api_caller.fetch_forecast, api_key=STORMGLASS_API_KEY)
-    forecasts = executor.map(fetch_with_api_key, locations)
+    forecasts = executor.map(fetch_with_api_key, user_config.locations)
     fmt_rows = (response_parser.parse_forecast(forecast) for forecast in forecasts)
 
 # Generate email
-email_data: dict[str, list] = { 'moon_phase': moon_phase_fmt, 'locations': [] }
-for location, row_data in zip(locations, fmt_rows):
+email_data: dict[str, list] = {
+    'moon_phase': moon_phase_fmt,
+    'locations': [],
+}
+for location, row_data in zip(user_config.locations, fmt_rows):
     location_summary = {
         'name': location.name,
         'type': location.info,
@@ -44,4 +47,4 @@ html_email: str = email_generator.generate_email(email_data)
 
 # Send email
 today_date_fmt = datetime.date.today().strftime('%d %B')
-mailer.send_email(html_email, today_date_fmt)
+mailer.send_email(html_email, user_config.email_recipients, today_date_fmt)

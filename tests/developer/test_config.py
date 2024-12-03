@@ -14,7 +14,7 @@ class TestLoadingLocations(unittest.TestCase):
         self.assertTrue(1)
 
     def test_whenLocationsLoaded_thenAccessLocationAttributes(self):
-        locations = config.load_locations(self.valid_locations)
+        locations = config.load_config(self.valid_locations).locations
         first_location = locations[0]
         expected = 'Bray Head', (53.1909, -6.0839), 'weather'
         actual = first_location.name, tuple(first_location.coords), first_location.info
