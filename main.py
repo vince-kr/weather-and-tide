@@ -12,10 +12,13 @@ import mailer
 from pathlib import Path
 import response_parser
 
+# Project root
+PROJECT_ROOT = Path(__file__).parent
+
 # Load configuration
 APIVERVE_API_KEY = config.APIVERVE_API_KEY
 STORMGLASS_API_KEY = config.STORMGLASS_API_KEY
-user_config = config.load_config(Path('config.yaml'))
+user_config = config.load_config(Path(PROJECT_ROOT / 'config.yaml'))
 
 # Fetch the current phase of the moon
 moon_phase = api_caller.fetch_moon_phase(APIVERVE_API_KEY)
