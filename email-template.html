@@ -6,7 +6,25 @@
           href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
 </head>
 <body>
-<div class="container m-2">
+<div class="section m-2">
+    {% if warnings %}
+    <div class="warnings block">
+        {% for warning in warnings %}
+        <div class="box" style="background-color: {{ warning.level }}">
+            <div class="columns">
+                <div class="column">
+                    <p><b>{{warning.headline}}</b></p>
+                    <p>From: {{ warning.onset }}</p>
+                    <p>To: {{ warning.expiry }}</p>
+                </div>
+                <div class="column">
+                    <p>{{warning.description}}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
     <div class="moon block">
         <h1 class="subtitle">Moon Phase</h1>
         <p>{{ moon_phase }}</p>

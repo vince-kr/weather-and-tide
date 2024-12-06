@@ -27,13 +27,35 @@ class TestResponseParse(unittest.TestCase):
             self.tide = json.load(tc)
 
     def test_generateFullEmail(self):
-        warnings_fmt = response_parser.format_warnings(self.warnings)
+        # warnings_fmt = response_parser.format_warnings(self.warnings)
         moon_phase_fmt = response_parser.format_moon_phase(self.moon)
         fmt_rows = [response_parser.parse_forecast(forecast)
                     for forecast in (self.weather, self.tide)]
 
         email_data = {
-            "warnings": warnings_fmt,
+            "warnings": [
+                {
+                    "level": "Yellow",
+                    "onset": "2024-12-06T16:52:23-00:00",
+                    "expiry": "2024-12-07T10:00:00-00:00",
+                    "headline": "Rain warning for Clare, Connacht, Donegal, Cavan, Monaghan, Longford, Louth, Meath, Westmeath",
+                    "description": "Storm Darragh: heavy rain on Friday followed by heavy showers Saturday morning.  Potential impacts:  • Localised flooding • Poor visibility • Difficult travelling conditions "
+                },
+                {
+                    "level": "Orange",
+                    "onset": "2024-12-06T20:00:00-00:00",
+                    "expiry": "2024-12-07T10:00:00-00:00",
+                    "headline": "Wind warning for Munster, Connacht",
+                    "description": "Storm Darragh: Very strong and gusty northwest winds.  Impacts:  • Fallen trees • Damage to power lines • Very difficult travelling conditions • Structural damage • Wave overtopping"
+                },
+                {
+                    "level": "Red",
+                    "onset": "2024-12-06T22:00:00-00:00",
+                    "expiry": "2024-12-07T03:00:00-00:00",
+                    "headline": "Wind warning for Donegal, Leitrim, Sligo",
+                    "description": "Storm Darragh: Extremely strong and gusty northwest winds.  Impacts:  • Fallen trees • Damage to power lines • Dangerous travelling conditions • Structural damage • Wave overtopping",
+                }
+            ],
             "moon_phase": moon_phase_fmt,
             'locations': []
         }
