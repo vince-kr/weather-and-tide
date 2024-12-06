@@ -30,6 +30,16 @@ class TestApiResponses(unittest.TestCase):
         self.assertTrue('data' in body)
         self.assertTrue(len(body['data']) > 0)
 
+    def test_callWeatherWarningApi_confirmContents(self):
+        request_object = {
+            'url': api_caller.WEATHER_WARNING_URL
+        }
+        response = requests.get(**request_object)
+        self.assertTrue(response.ok)
+        body = response.json()[0]
+        self.assertTrue("severity" in body)
+        self.assertTrue(len(body["regions"]) > 0)
+
     def test_callTideApi_confirmContents(self):
         request_object = api_caller._build_tide_request(self.coords, self.stormglass_api_key)
         response = requests.get(**request_object)

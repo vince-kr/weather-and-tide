@@ -45,6 +45,12 @@ weather_row_headers = (
     "Cloud cover",
 )
 
+def format_warnings(warnings: list[dict]) -> str:
+    return "Yes!"
+
+def format_moon_phase(phase_data: dict) -> str:
+    return f"{phase_data['phaseEmoji']} {phase_data['phase']}"
+
 def parse_forecast(forecast: dict) -> zip|tuple:
     if 'weatherdata' in forecast:
         return _generate_weather_rows(forecast)
@@ -104,7 +110,3 @@ def _generate_tide_rows(tides: dict) -> tuple:
 def _extract_time_from(datetimestamp: str) -> str:
     utc_time = datetime.datetime.fromisoformat(datetimestamp)
     return utc_time.astimezone(tz=None).strftime('%H:%M')
-
-
-def format_moon_phase(phase_data: dict) -> str:
-    return f"{phase_data['phaseEmoji']} {phase_data['phase']}"

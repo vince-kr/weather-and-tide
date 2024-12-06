@@ -6,6 +6,7 @@ import xmltodict
 MOON_URL = "https://api.apiverve.com/v1/moonphases?today=true"
 TIDES_URL = 'https://api.stormglass.io/v2/tide/extremes/point'
 WEATHER_URL = 'http://openaccess.pf.api.met.ie/metno-wdb2ts/locationforecast'
+WEATHER_WARNING_URL = "https://www.met.ie/Open_Data/json/warning_IRELAND.json"
 
 def fetch_moon_phase(api_key: str) -> dict | None:
     request_object = {
@@ -17,6 +18,15 @@ def fetch_moon_phase(api_key: str) -> dict | None:
     response = requests.get(**request_object)
     if response.ok:
         return response.json()["data"]
+    return None
+
+def fetch_warnings() -> list[dict] | None:
+    request_object = {
+        'url': WEATHER_WARNING_URL
+    }
+    response = requests.get(**request_object)
+    if response.ok:
+        return response.json()
     return None
 
 def fetch_forecast(location: Location, api_key: str) -> dict | None:
