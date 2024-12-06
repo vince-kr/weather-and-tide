@@ -36,7 +36,10 @@ If you prefer more control, you can create your own virtual environment to insta
 
 ### (Optional) Schedule execution
 
-For example using crontab: run `crontab -e` and add the line `0 6 * * * /path/to/weather-and-tide/run.py` to execute the script every morning at 6am system time.
+For example using crontab: run `crontab -e` and add the line `0 6 * * * 
+/path/to/weahter-and-tide/venv/bin/python /path/to/weather-and-tide/run.py` to execute the 
+script every morning at 
+6am system time.
 
 ## Contributing
 
