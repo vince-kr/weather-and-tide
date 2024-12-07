@@ -3,6 +3,10 @@
 recipients:
   - name@domain.com
 
+county_warnings:
+  - Dublin
+  - Wicklow
+
 locations:
   - name: 'Bray Head'
     coords:
