@@ -246,3 +246,16 @@ class TestWarning(unittest.TestCase):
             self.response, desired_counties, self.COUNTIES_TO_FIPS
         )
         self.assertEqual(expected, actual)
+
+    def test_givenCompleteWarnings_onlySelectDesiredData(self):
+        expected = {
+            "level": "Yellow",
+            "headline": "Rain warning for Clare, Connacht, "
+            "Donegal, Cavan, Monaghan, Longford, "
+            "Louth, Meath, Westmeath",
+            "onset": "2024-12-06T16:52:23-00:00",
+            "expiry": "2024-12-07T10:00:00-00:00",
+            "description": "Storm Darragh: heavy rain on Friday followed by heavy showers Saturday morning.  Potential impacts:  • Localised flooding • Poor visibility • Difficult travelling conditions ",
+        }
+        actual = response_parser._filter_keys(self.response[0])
+        self.assertEqual(expected, actual)

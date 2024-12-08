@@ -29,8 +29,14 @@ weather_row_headers = (
 )
 
 
-def format_warnings(warnings: list[dict], desired_counties: set[str]) -> tuple[dict]:
-    pass
+def format_warnings(
+    warnings: list[dict], desired_counties: set[str], counties_to_fips: dict[str, str]
+) -> list[dict]:
+    desired_warnings: list[dict] = _select_counties(
+        warnings, desired_counties, counties_to_fips
+    )
+    desired_data = [_filter_keys(warning) for warning in desired_warnings]
+    return desired_data
 
 
 def _select_counties(
@@ -44,6 +50,13 @@ def _select_counties(
         if set(warning["regions"]) & desired_county_codes:
             matching_warnings.append(warning)
     return matching_warnings
+
+
+def _filter_keys(warning: dict[str, str]) -> dict[str, str]:
+    return {
+        key: warning[key]
+        for key in ("level", "headline", "onset", "expiry", "description")
+    }
 
 
 def format_moon_phase(phase_data: dict) -> str:
