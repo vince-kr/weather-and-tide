@@ -36,19 +36,23 @@ def format_warnings(
         warnings, desired_counties, counties_to_fips
     )
     desired_data = [_filter_keys(warning) for warning in desired_warnings]
+    for warning in desired_data:
+        warning["onset"] = _format_warning_timestamps(warning["onset"])
+        warning["expiry"] = _format_warning_timestamps(warning["expiry"])
     return desired_data
 
 
 def _select_counties(
     warnings: list[dict], desired_counties: set[str], counties_to_fips: dict[str, str]
 ) -> list[dict] | None:
-    matching_warnings = []
     desired_county_codes = set(
         counties_to_fips[county_name] for county_name in desired_counties
     )
-    for warning in warnings:
-        if set(warning["regions"]) & desired_county_codes:
-            matching_warnings.append(warning)
+    matching_warnings = [
+        warning
+        for warning in warnings
+        if set(warning["regions"]) & desired_county_codes
+    ]
     return matching_warnings
 
 
@@ -57,6 +61,11 @@ def _filter_keys(warning: dict[str, str]) -> dict[str, str]:
         key: warning[key]
         for key in ("level", "headline", "onset", "expiry", "description")
     }
+
+
+def _format_warning_timestamps(raw_timestamp: str) -> str:
+    as_object = datetime.datetime.fromisoformat(raw_timestamp)
+    return as_object.strftime("%-d %B, %H:%M")
 
 
 def format_moon_phase(phase_data: dict) -> str:

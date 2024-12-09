@@ -259,3 +259,13 @@ class TestWarning(unittest.TestCase):
         }
         actual = response_parser._filter_keys(self.response[0])
         self.assertEqual(expected, actual)
+
+    def test_givenTimestampValue_formatAsReadableTime(self):
+        onset = "2024-12-06T16:52:23-00:00"
+        expiry = "2024-12-07T10:00:00-00:00"
+        expected_onset = "6 December, 16:52"
+        expected_expiry = "7 December, 10:00"
+        actual_onset = response_parser._format_warning_timestamps(onset)
+        actual_expiry = response_parser._format_warning_timestamps(expiry)
+        self.assertEqual(expected_onset, actual_onset)
+        self.assertEqual(expected_expiry, actual_expiry)
