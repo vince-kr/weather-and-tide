@@ -32,7 +32,7 @@ weather_row_headers = (
 def format_warnings(
     warnings: list[dict], desired_counties: set[str], counties_to_fips: dict[str, str]
 ) -> list[dict]:
-    desired_warnings: list[dict] = _select_counties(
+    desired_warnings: list[dict] = _select_and_order(
         warnings, desired_counties, counties_to_fips
     )
     desired_data = [_filter_keys(warning) for warning in desired_warnings]
@@ -42,7 +42,7 @@ def format_warnings(
     return desired_data
 
 
-def _select_counties(
+def _select_and_order(
     warnings: list[dict], desired_counties: set[str], counties_to_fips: dict[str, str]
 ) -> list[dict] | None:
     desired_county_codes = set(
@@ -50,7 +50,7 @@ def _select_counties(
     )
     matching_warnings = [
         warning
-        for warning in warnings
+        for warning in warnings[::-1]
         if set(warning["regions"]) & desired_county_codes
     ]
     return matching_warnings

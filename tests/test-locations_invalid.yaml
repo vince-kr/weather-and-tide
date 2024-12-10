@@ -1,5 +1,10 @@
 recipients:
   - no@email.com
+
+county_warnings:
+  - Dublin
+  - Wicklow
+
 locations:
   - name: 12.5
     coords:

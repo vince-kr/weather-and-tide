@@ -1,6 +1,7 @@
 ########################################################
 #################  WEATHER  AND  TIDE  #################
 ########################################################
+import json
 from functools import partial
 
 import api_caller
@@ -17,6 +18,17 @@ APIVERVE_API_KEY = config.APIVERVE_API_KEY
 STORMGLASS_API_KEY = config.STORMGLASS_API_KEY
 user_config = config.load_config(Path(config.PROJECT_ROOT / "config.yaml"))
 
+# Fetch weather warnings
+with open(config.PROJECT_ROOT / "county_to_fips.json") as cf:
+    counties_to_fips = json.load(cf)
+warnings = api_caller.fetch_warnings()
+if warnings:
+    warnings = response_parser.format_warnings(
+        warnings, user_config.county_warnings, counties_to_fips
+    )
+else:
+    warnings = []
+
 # Fetch the current phase of the moon
 moon_phase = api_caller.fetch_moon_phase(APIVERVE_API_KEY)
 if moon_phase:
@@ -32,6 +44,7 @@ with ThreadPoolExecutor() as executor:
 
 # Generate email
 email_data: dict[str, list] = {
+    "warnings": warnings,
     "moon_phase": moon_phase_fmt,
     "locations": [],
 }

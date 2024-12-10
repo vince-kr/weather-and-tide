@@ -239,10 +239,10 @@ class TestWarning(unittest.TestCase):
         with open(config.PROJECT_ROOT / "county_to_fips.json") as cf:
             self.COUNTIES_TO_FIPS: dict[str, str] = json.load(cf)
 
-    def test_givenSixWarnings_onlySelectForClareOrGalway(self):
-        desired_counties = {"Clare", "Galway"}
-        expected = [self.response[idx] for idx in (0, 1, 2, 6)]
-        actual = response_parser._select_counties(
+    def test_givenSixWarnings_selectAndSort(self):
+        desired_counties = {"Dublin", "Wicklow"}
+        expected = [self.response[idx] for idx in (7, 3, 1)]
+        actual = response_parser._select_and_order(
             self.response, desired_counties, self.COUNTIES_TO_FIPS
         )
         self.assertEqual(expected, actual)

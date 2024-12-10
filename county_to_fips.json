@@ -18,5 +18,11 @@
   "Meath": "EI21",
   "Monaghan": "EI22",
   "Offaly": "EI23",
-  "Roscommon": "EI24"
+  "Roscommon": "EI24",
+  "Sligo": "EI25",
+  "Tipperary": "EI26",
+  "Waterford": "EI27",
+  "Westmeath": "EI29",
+  "Wexford": "EI30",
+  "Wicklow": "EI31"
 }
