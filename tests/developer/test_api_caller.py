@@ -1,7 +1,7 @@
 import datetime
+import unittest
 
 import api_caller
-import unittest
 
 class TestApiCaller(unittest.TestCase):
     def setUp(self):
@@ -15,15 +15,15 @@ class TestApiCaller(unittest.TestCase):
 
     def test_generateWeatherRequestObject(self):
         coords = (53.2048, -6.0979)
-        base_url = 'http://openaccess.pf.api.met.ie/metno-wdb2ts/locationforecast'
+        base_url = 'http://some-fake-url.com/weather'
         expected = {
             'url': base_url + f'?lat=53.2048;long=-6.0979'
         }
-        actual = api_caller._build_weather_request(coords)
+        actual = api_caller._build_weather_request(base_url, coords)
         self.assertEqual(expected, actual)
 
     def test_generateTideRequestObject(self):
-        base_url = 'https://api.stormglass.io/v2/tide/extremes/point'
+        base_url = 'http://some-fake-url.com/tides'
         lat, long = (53.2048, -6.0979)
         api_key = 'not-really-an-api-key'
         expected = {
@@ -38,5 +38,5 @@ class TestApiCaller(unittest.TestCase):
                 'Authorization': api_key
             }
         }
-        actual = api_caller._build_tide_request((lat, long), api_key)
+        actual = api_caller._build_tide_request(base_url, (lat, long), api_key)
         self.assertEqual(expected, actual)
