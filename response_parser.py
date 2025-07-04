@@ -88,7 +88,7 @@ def _generate_weather_rows(weather: dict) -> zip:
         average_values.append(
             tuple(
                 _average_value(datum, selector)
-                for datum in itertools.batched(all_datums, n=3)
+                for datum in _batched(all_datums, 3)
             )
         )
     return zip(weather_row_headers, tuple(average_values))
@@ -124,6 +124,10 @@ def _average_value(data: tuple, selector: Selector) -> str:
         fmt = Counter(pertinent_values).most_common()[0][0]
     return f"{fmt}{selector.symbol}"
 
+def _batched(data: Sequence, length: int) -> Sequence:
+    iterator = iter(data)
+    while batch := tuple(itertools.islice(iterator, length)):
+        yield batch
 
 def _avg_and_format(values: Sequence, conversion: Callable) -> str:
     average = sum(float(point) for point in values) / len(values)
