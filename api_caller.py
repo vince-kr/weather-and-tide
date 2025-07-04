@@ -3,10 +3,12 @@ from datetime import date, timedelta
 import requests
 import xmltodict
 
+"""
 MOON_URL = "https://api.apiverve.com/v1/moonphases?today=true"
 TIDES_URL = 'https://api.stormglass.io/v2/tide/extremes/point'
 WEATHER_URL = 'http://openaccess.pf.api.met.ie/metno-wdb2ts/locationforecast'
 WEATHER_WARNING_URL = "https://www.met.ie/Open_Data/json/warning_IRELAND.json"
+"""
 
 def fetch_moon_phase(api_key: str) -> dict | None:
     request_object = {
@@ -39,13 +41,14 @@ def fetch_forecast(location: Location, api_key: str) -> dict | None:
             result = None
     return result
 
-def _build_weather_request(coords: tuple[float, float]):
+def _build_weather_request(url: str, coords: tuple[float, float]):
     lat, long = coords
     return {
-        'url': WEATHER_URL + f'?lat={lat};long={long}'
+        'url': url + f'?lat={lat};long={long}'
     }
 
 def _build_tide_request(
+        url: str,
         coords: tuple[float, float],
         api_key: str
 ) -> dict:
@@ -53,7 +56,7 @@ def _build_tide_request(
     start = date.today().isoformat() + 'T00:00:00'
     end = (date.today() + timedelta(days=1)).isoformat() + 'T00:00:00'
     return {
-        'url': TIDES_URL,
+        'url': url,
         'params': {
             'lat': lat,
             'lng': long,
