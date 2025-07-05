@@ -3,6 +3,7 @@ venv/
 **/__pycache__
 
 .env
+.python-version
 config.yaml
 generated_email.html
 todo*

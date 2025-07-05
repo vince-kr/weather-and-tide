@@ -1,16 +1,16 @@
 ########################################################
 #################  WEATHER  AND  TIDE  #################
 ########################################################
+from concurrent.futures import ThreadPoolExecutor
 import json
 from functools import partial
+from pathlib import Path
 
 import api_caller
-from concurrent.futures import ThreadPoolExecutor
 import config
 import datetime
 import email_generator
 import mailer
-from pathlib import Path
 import response_parser
 
 # Load configuration

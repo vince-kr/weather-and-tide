@@ -1,5 +1,4 @@
 from jinja2 import Template
-import os
 
 import config
 
