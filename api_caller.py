@@ -1,7 +1,8 @@
-from config import Location
 from datetime import date, timedelta
 import requests
 import xmltodict
+
+from config import Location  # TODO
 
 MOON_URL = "https://api.apiverve.com/v1/moonphases?today=true"
 TIDES_URL = 'https://api.stormglass.io/v2/tide/extremes/point'

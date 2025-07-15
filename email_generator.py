@@ -1,6 +1,6 @@
 from jinja2 import Template
 
-import config
+import config  # TODO
 
 with open(config.PROJECT_ROOT / "email-template.html") as wtt:
     template = Template(wtt.read(), trim_blocks=True, lstrip_blocks=True)

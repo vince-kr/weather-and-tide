@@ -1,7 +1,8 @@
-from config import SEND_EMAIL_ADDRESS, SEND_EMAIL_PASSWORD
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+
+from config import SEND_EMAIL_ADDRESS, SEND_EMAIL_PASSWORD  # TODO
 
 def send_email(mail_body: str, recipients: list[str], todays_date: str) -> None:
     msg = MIMEMultipart('alternative')
