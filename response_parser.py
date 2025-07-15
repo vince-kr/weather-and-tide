@@ -1,7 +1,10 @@
 import datetime
 from collections import Counter, namedtuple
 import itertools
-from typing import Callable, Sequence
+from operator import attrgetter
+from typing import Callable, Generator, Literal, Sequence
+
+from pydantic import BaseModel
 
 Selector = namedtuple(
     "Selector", "data_type key symbol conversion", defaults=[lambda x: x]
@@ -29,43 +32,44 @@ weather_row_headers = (
 )
 
 
-def format_warnings(
-    warnings: list[dict], desired_counties: set[str], counties_to_fips: dict[str, str]
-) -> list[dict]:
-    desired_warnings: list[dict] = _select_and_order(
-        warnings, desired_counties, counties_to_fips
-    )
-    desired_data = [_filter_keys(warning) for warning in desired_warnings]
-    for warning in desired_data:
-        warning["onset"] = _format_warning_timestamps(warning["onset"])
-        warning["expiry"] = _format_warning_timestamps(warning["expiry"])
-    return desired_data
+class WeatherWarning(BaseModel):
+    id: int
+    level: Literal["Red", "Orange", "Yellow"]
+    headline: str
+    onset: datetime.datetime
+    expiry: datetime.datetime
+    description: str
+    regions: list[str]
 
+    @property
+    def level_index(self) -> int:
+        return ("Red", "Orange", "Yellow").index(self.level)
 
-def _select_and_order(
-    warnings: list[dict], desired_counties: set[str], counties_to_fips: dict[str, str]
-) -> list[dict] | None:
-    desired_county_codes = set(
-        counties_to_fips[county_name] for county_name in desired_counties
-    )
-    matching_warnings = [
-        warning
-        for warning in warnings[::-1]
-        if set(warning["regions"]) & desired_county_codes
-    ]
-    return matching_warnings
+def parse_warnings(
+        warnings_response: list[dict],
+        desired_fips: list[str]
+) -> list[WeatherWarning]:
+    warning_objects = (WeatherWarning.model_validate(raw_warning)
+                       for raw_warning in warnings_response)
+    filtered_wgs = (wg for wg in warning_objects
+                    if set(wg.regions) & set(desired_fips))
+    sorted_county = _sort_by_county(filtered_wgs, desired_fips)
+    sorted_level = sorted(sorted_county, key=attrgetter("level_index"))
+    return sorted_level[:4]
+    
 
+def _sort_by_county(
+        warnings: Generator[WeatherWarning, None, None],
+        desired_fips: list[str]
+) -> list[WeatherWarning]:
+    county_order = {code: i for i, code in enumerate(desired_fips)}
 
-def _filter_keys(warning: dict[str, str]) -> dict[str, str]:
-    return {
-        key: warning[key]
-        for key in ("level", "headline", "onset", "expiry", "description")
-    }
+    def sort_key(wg: WeatherWarning):
+        valid_codes = (county_order[code] for code in wg.regions
+                       if code in county_order)
+        return min(valid_codes)
 
-
-def _format_warning_timestamps(raw_timestamp: str) -> str:
-    as_object = datetime.datetime.fromisoformat(raw_timestamp)
-    return as_object.strftime("%-d %B, %H:%M")
+    return sorted(warnings, key=sort_key)
 
 
 def format_moon_phase(phase_data: dict) -> str:
@@ -124,10 +128,12 @@ def _average_value(data: tuple, selector: Selector) -> str:
         fmt = Counter(pertinent_values).most_common()[0][0]
     return f"{fmt}{selector.symbol}"
 
-def _batched(data: Sequence, length: int) -> Sequence:
+
+def _batched(data: Sequence, length: int) -> Generator:
     iterator = iter(data)
     while batch := tuple(itertools.islice(iterator, length)):
         yield batch
+
 
 def _avg_and_format(values: Sequence, conversion: Callable) -> str:
     average = sum(float(point) for point in values) / len(values)

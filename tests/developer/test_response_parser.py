@@ -3,14 +3,15 @@
 import json
 import unittest
 
+import xmltodict
+
 import config
 import response_parser
-import xmltodict
 
 
 class TestTide(unittest.TestCase):
     def setUp(self):
-        self.datetimestamp = "2024-09-26T18:31:00+00:00"
+        self.timestamp = "2024-09-26T18:31:00+00:00"
         with open(config.PROJECT_ROOT / "tests/cached_api_responses/tide.json") as tf:
             self.response = json.load(tf)
         self.expected_formatting = (
@@ -37,7 +38,7 @@ class TestTide(unittest.TestCase):
 
     def test_givenBigDateTimeString_extractOnlyTimeInLocalZone(self):
         expected = "19:31"
-        actual = response_parser._extract_time_from(self.datetimestamp)
+        actual = response_parser._extract_time_from(self.timestamp)
         self.assertEqual(expected, actual)
 
     def test_givenResponseAsDict_returnIterableOfTuples(self):
@@ -170,7 +171,7 @@ class TestWeather(unittest.TestCase):
         )
         self.assertEqual(expected, actual)
 
-    def test_givenMetresPerSecond_convertKmperHour(self):
+    def test_givenMetresPerSecond_convertKmPerHour(self):
         expected = "21.6"
         actual = response_parser._avg_and_format((5, 6, 7), lambda x: x * 3.6)
         self.assertEqual(expected, actual)
@@ -238,34 +239,75 @@ class TestWarning(unittest.TestCase):
             self.response: list[dict] = json.load(wf)
         with open(config.PROJECT_ROOT / "county_to_fips.json") as cf:
             self.COUNTIES_TO_FIPS: dict[str, str] = json.load(cf)
+        self.desired_counties = ["Dublin", "Wicklow"]
 
-    def test_givenSixWarnings_selectAndSort(self):
-        desired_counties = {"Dublin", "Wicklow"}
-        expected = [self.response[idx] for idx in (7, 3, 1)]
-        actual = response_parser._select_and_order(
-            self.response, desired_counties, self.COUNTIES_TO_FIPS
+        response_template = dict(
+            id=0,
+            level="Yellow",
+            headline="Scary weather warning!",
+            onset="2024-09-26T18:31:00+00:00",
+            expiry="2024-09-27T18:31:00+00:00",
+            description="Batten down the hatches.",
+            regions=["EI02"]
         )
+
+        self.yellow = dict(response_template)
+        self.yellow["id"] = 1
+
+        self.orange = dict(response_template)
+        self.orange["id"] = 2
+        self.orange["level"] = "Orange"
+
+        self.EI02 = dict(response_template)
+        self.EI02["id"] = 3
+        self.EI03 = dict(response_template)
+        self.EI03["id"] = 4
+        self.EI03["regions"] = ["EI03"]
+
+        self.many_regions = dict(response_template)
+        self.many_regions["id"] = 5
+        self.many_regions["regions"] = ["EI03", "EI28", "whoop"]
+
+    def test_givenTwoWarningsAndOneDesired_returnOne(self):
+        desired_county_codes = ["EI02"]
+        parsed_warnings = response_parser.parse_warnings(
+            [self.EI02, self.EI03],
+                       desired_county_codes
+        )
+        self.assertEqual(len(parsed_warnings), 1)
+
+    def test_givenTwoWarningsOfDifferentLevel_sortBySeverity(self):
+        sorted_warnings = response_parser.parse_warnings(
+            [self.yellow, self.orange],
+            ["EI02"])
+        expected = ["Orange", "Yellow"]
+        actual = [wg.level for wg in sorted_warnings]
+        self.assertEqual(expected, actual)
+    
+    def test_givenTwoWarningsOfSameLevel_sortByCounty(self):
+        sorted_warnings = response_parser.parse_warnings(
+            [self.EI02, self.EI03],
+            ["EI03", "EI02"]
+        )
+        expected = [["EI03"], ["EI02"]]
+        actual = [wg.regions for wg in sorted_warnings]
         self.assertEqual(expected, actual)
 
-    def test_givenCompleteWarnings_onlySelectDesiredData(self):
-        expected = {
-            "level": "Yellow",
-            "headline": "Rain warning for Clare, Connacht, "
-            "Donegal, Cavan, Monaghan, Longford, "
-            "Louth, Meath, Westmeath",
-            "onset": "2024-12-06T16:52:23-00:00",
-            "expiry": "2024-12-07T10:00:00-00:00",
-            "description": "Storm Darragh: heavy rain on Friday followed by heavy showers Saturday morning.  Potential impacts:  • Localised flooding • Poor visibility • Difficult travelling conditions ",
-        }
-        actual = response_parser._filter_keys(self.response[0])
+    def test_givenWarningsWithMultipleRegions_selectCorrectWarnings(self):
+        sorted_filtered_warnings = response_parser.parse_warnings(
+            [self.many_regions],
+            ["EI03"]
+        )
+        self.assertEqual(len(sorted_filtered_warnings), 1)
+        expected = ["EI03", "EI28", "whoop"]
+        actual = sorted_filtered_warnings[0].regions
         self.assertEqual(expected, actual)
 
-    def test_givenTimestampValue_formatAsReadableTime(self):
-        onset = "2024-12-06T16:52:23-00:00"
-        expiry = "2024-12-07T10:00:00-00:00"
-        expected_onset = "6 December, 16:52"
-        expected_expiry = "7 December, 10:00"
-        actual_onset = response_parser._format_warning_timestamps(onset)
-        actual_expiry = response_parser._format_warning_timestamps(expiry)
-        self.assertEqual(expected_onset, actual_onset)
-        self.assertEqual(expected_expiry, actual_expiry)
+    def test_givenWarningsMultipleLevelsCounties_sortCountyThenLevel(self):
+        sorted_filtered_warnings = response_parser.parse_warnings(
+            [self.yellow, self.orange, self.EI02, self.EI03],
+            ["EI03", "EI02"]
+        )
+        expected = (2, 4, 1, 3)
+        actual = tuple((wg.id for wg in sorted_filtered_warnings))
+        self.assertEqual(expected, actual)

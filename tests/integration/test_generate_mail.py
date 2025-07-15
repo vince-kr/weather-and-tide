@@ -12,6 +12,10 @@ class TestResponseParse(unittest.TestCase):
     def setUp(self):
         config_file = config.PROJECT_ROOT / "example.config.yaml"
         self.user_config = config.load_config(config_file)
+        with open(config.PROJECT_ROOT / "county_to_fips.json") as cf:
+            COUNTIES_TO_FIPS = json.load(cf)
+        self.desired_counties = [COUNTIES_TO_FIPS[name]
+                                 for name in self.user_config.county_warnings]
         cache_files = config.PROJECT_ROOT / "tests/cached_api_responses"
         with open(cache_files / "warnings.json") as wc:
             self.warnings = json.load(wc)
@@ -25,9 +29,7 @@ class TestResponseParse(unittest.TestCase):
             self.tide = json.load(tc)
 
     def test_generateFullEmail(self):
-        warnings = response_parser.format_warnings(
-            self.warnings, self.user_config.county_warnings, self.counties_to_fips
-        )
+        warnings = response_parser.parse_warnings(self.warnings, self.desired_counties)
         moon_phase_fmt = response_parser.format_moon_phase(self.moon)
         fmt_rows = [
             response_parser.parse_forecast(forecast)

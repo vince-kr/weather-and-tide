@@ -2,13 +2,13 @@
 #################  WEATHER  AND  TIDE  #################
 ########################################################
 from concurrent.futures import ThreadPoolExecutor
+import datetime
 import json
 from functools import partial
 from pathlib import Path
 
 import api_caller
 import config
-import datetime
 import email_generator
 import mailer
 import response_parser
@@ -16,18 +16,15 @@ import response_parser
 # Load configuration
 APIVERVE_API_KEY = config.APIVERVE_API_KEY
 STORMGLASS_API_KEY = config.STORMGLASS_API_KEY
-user_config = config.load_config(Path(config.PROJECT_ROOT / "config.yaml"))
+user_config: config.Config = config.load_config(Path(config.PROJECT_ROOT / "config.yaml"))
 
 # Fetch weather warnings
 with open(config.PROJECT_ROOT / "county_to_fips.json") as cf:
-    counties_to_fips = json.load(cf)
-warnings = api_caller.fetch_warnings()
-if warnings:
-    warnings = response_parser.format_warnings(
-        warnings, user_config.county_warnings, counties_to_fips
-    )
-else:
-    warnings = []
+    counties_to_fips: dict[str, str] = json.load(cf)
+desired_counties: list[str] = [counties_to_fips[name]
+                               for name in user_config.county_warnings]
+warnings_response = api_caller.fetch_warnings()
+weather_warnings = response_parser.parse_warnings(warnings_response, desired_counties)
 
 # Fetch the current phase of the moon
 moon_phase = api_caller.fetch_moon_phase(APIVERVE_API_KEY)
@@ -44,7 +41,7 @@ with ThreadPoolExecutor() as executor:
 
 # Generate email
 email_data: dict[str, list] = {
-    "warnings": warnings,
+    "warnings": weather_warnings,
     "moon_phase": moon_phase_fmt,
     "locations": [],
 }

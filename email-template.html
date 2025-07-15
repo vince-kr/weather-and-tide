@@ -14,8 +14,8 @@
             <div class="columns">
                 <div class="column">
                     <p><b>{{warning.headline}}</b></p>
-                    <p>From: {{ warning.onset }}</p>
-                    <p>To: {{ warning.expiry }}</p>
+                    <p>From: {{ warning.onset.strftime("%-d %B, %H:%M") }}</p>
+                    <p>To: {{ warning.expiry.strftime("%-d %B, %H:%M") }}</p>
                 </div>
                 <div class="column">
                     <p>{{warning.description}}</p>
