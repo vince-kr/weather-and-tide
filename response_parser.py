@@ -24,6 +24,7 @@ weather_selectors = (
 )
 
 weather_row_headers = (
+    "",
     "Temperature",
     "Precipitation",
     "Wind speed",
@@ -87,6 +88,7 @@ def _generate_weather_rows(weather: dict) -> zip:
     forecasts = weather["weatherdata"]["product"]["time"]
     temp_wind, precip = _extract_weather_datums(forecasts[:26])
     all_datums = _combine_datums((temp_wind, precip))
+    hours = _calculate_hours(datetime.datetime.now())
     average_values = []
     for selector in weather_selectors:
         average_values.append(
@@ -95,7 +97,8 @@ def _generate_weather_rows(weather: dict) -> zip:
                 for datum in _batched(all_datums, 3)
             )
         )
-    return zip(weather_row_headers, tuple(average_values))
+    rows = [hours] + average_values
+    return zip(weather_row_headers, tuple(rows))
 
 
 def _extract_weather_datums(all_data: Sequence) -> tuple:
@@ -118,6 +121,13 @@ def _is_even(number: int) -> bool:
 
 def _combine_datums(datums: tuple) -> tuple:
     return tuple(weather | precip for weather, precip in zip(*datums))
+
+
+def _calculate_hours(current_time: datetime.datetime) -> tuple[str, ...]:
+    first_hour = current_time.hour
+    hours = (h for h in range(first_hour, first_hour+12, 3))
+    hours_fmt = (f"{hour}:00 - {hour+3}:00" for hour in hours)
+    return tuple(hours_fmt)
 
 
 def _average_value(data: tuple, selector: Selector) -> str:

@@ -1,5 +1,5 @@
 """Create a module to convert API responses into useful objects"""
-
+import datetime
 import json
 import unittest
 
@@ -155,6 +155,16 @@ class TestWeather(unittest.TestCase):
         actual = response_parser._combine_datums(double_tuple)
         self.assertEqual(expected, actual)
 
+    def test_givenSixTenAm_return6_9_12_15(self):
+        expected = (
+        "6:00 - 9:00",
+        "9:00 - 12:00",
+        "12:00 - 15:00",
+        "15:00 - 18:00",
+        )
+        actual = response_parser._calculate_hours(datetime.datetime(2025, 7, 16, 6, 10))
+        self.assertEqual(expected, actual)
+
     def test_givenThrupleOfData_returnAverageOfNumericalFields(self):
         selector = response_parser.Selector(
             data_type="temperature", key="@unit", symbol="° C"
@@ -227,6 +237,7 @@ class TestWeather(unittest.TestCase):
     def test_parseEndToEnd(self):
         expected = self.expected_formatting
         forecast_fmt = response_parser.parse_forecast(self.response)
+        print(*(el for el in forecast_fmt))
         actual = tuple(row_data for _, row_data in forecast_fmt)
         self.assertEqual(expected, actual)
 
