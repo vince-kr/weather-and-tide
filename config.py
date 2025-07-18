@@ -29,14 +29,14 @@ class Config:
 
 def load_config(config_file: Path) -> Config:
     """
-    Load location data from a YAML file and return it as a tuple of Location objects.
+    Load location data from a YAML file and return a Config object.
 
     Args:
         config_file (Path): The path to the YAML file containing location data.
 
     Returns:
-        tuple[Location, ...]: A tuple of Location objects, each representing a location
-        with a name, coordinates, and the type of information to fetch.
+        Config: An object with fields for the recipients of forecast emails, which counties
+        to give weather warnings for, and the Locations (weather or tide) to forecast
     """
     with open(config_file) as lf:
         config = yaml.load(lf, Loader=yaml.Loader)
