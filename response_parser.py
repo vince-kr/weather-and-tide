@@ -4,7 +4,7 @@ import itertools
 from operator import attrgetter
 from typing import Callable, Generator, Literal, Sequence
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 Selector = namedtuple(
     "Selector", "data_type key symbol conversion", defaults=[lambda x: x]
@@ -83,11 +83,40 @@ def format_moon_phase(phase_data: dict) -> str:
     return f"{phase_object.phaseEmoji} {phase_object.phase}"
 
 
+class TideForecast(BaseModel):
+    tide_time: datetime.datetime = Field(alias="time")
+    tide_type: Literal["low", "high"] = Field(alias="type")
+
+    @property
+    def fmt_time(self):
+        return self.tide_time.astimezone(tz=None).strftime("%H:%M")
+
+    @property
+    def fmt_type(self):
+        return self.tide_type.capitalize()
+
+class ForecastTableRow:
+    pass
+
+class ForecastTable:
+    header_row: ForecastTableRow
+    data_rows: tuple[ForecastTableRow]
+
 def parse_forecast(forecast: dict) -> zip | tuple:
     if "weatherdata" in forecast:
         return _generate_weather_rows(forecast)
     else:
         return _generate_tide_rows(forecast)
+
+def _generate_tide_rows(tides: dict) -> tuple:
+    tide_objects = [TideForecast.model_validate(tide) for tide in tides["data"]]
+    return tuple(
+        (
+            tide_datum.fmt_type,
+            tuple([tide_datum.fmt_time])
+        )
+        for tide_datum in tide_objects
+    )
 
 
 def _generate_weather_rows(weather: dict) -> zip:
@@ -155,15 +184,6 @@ def _avg_and_format(values: Sequence, conversion: Callable) -> str:
     average = sum(float(point) for point in values) / len(values)
     return f"{conversion(average):.1f}"
 
-
-def _generate_tide_rows(tides: dict) -> tuple:
-    return tuple(
-        (
-            tide_datum["type"].capitalize(),
-            tuple((_extract_time_from(tide_datum["time"]),)),
-        )
-        for tide_datum in tides["data"]
-    )
 
 
 def _extract_time_from(datetimestamp: str) -> str:

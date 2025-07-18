@@ -1,9 +1,8 @@
-import xmltodict
-
 import dotenv
 import os
 import requests
 import unittest
+import xmltodict
 
 import api_caller
 
@@ -12,6 +11,8 @@ dotenv.load_dotenv()
 class TestApiResponses(unittest.TestCase):
     def setUp(self):
         self.coords = (53.2048, -6.0979)
+        self.tide_url = 'https://api.stormglass.io/v2/tide/extremes/point'
+        self.weather_url = 'http://openaccess.pf.api.met.ie/metno-wdb2ts/locationforecast'
         self.apiverve_api_key = os.getenv('APIVERVE_API_KEY')
         self.stormglass_api_key = os.getenv('STORMGLASS_API_KEY')
 
@@ -42,7 +43,11 @@ class TestApiResponses(unittest.TestCase):
         self.assertTrue(len(body["regions"]) > 0)
 
     def test_callTideApi_confirmContents(self):
-        request_object = api_caller._build_tide_request(self.coords, self.stormglass_api_key)
+        request_object = api_caller._build_tide_request(
+            self.tide_url,
+            self.coords,
+            self.stormglass_api_key
+        )
         response = requests.get(**request_object)
         self.assertTrue(response.ok)
         body = response.json()
@@ -50,7 +55,7 @@ class TestApiResponses(unittest.TestCase):
         self.assertTrue(len(body['data']) > 0)
 
     def test_callWeatherApi_confirmContents(self):
-        request_object = api_caller._build_weather_request(self.coords)
+        request_object = api_caller._build_weather_request(self.weather_url, self.coords)
         response = requests.get(**request_object)
         self.assertTrue(response.ok)
         body = xmltodict.parse(response.content)

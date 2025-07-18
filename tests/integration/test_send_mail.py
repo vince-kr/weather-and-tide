@@ -1,25 +1,29 @@
-import email_generator
 import json
-import mailer
-import response_parser
 import unittest
 import xmltodict
 
+import config
+import email_generator
+import mailer
+import response_parser
+
 
 class TestSendEmail(unittest.TestCase):
+    def setUp(self):
+        with open(config.PROJECT_ROOT / "tests/cached_api_responses/moon.json") as mr:
+            self.moon_response = json.load(mr)
+        with open(config.PROJECT_ROOT / "tests/cached_api_responses/tide.json") as tr:
+            self.tide_response = json.load(tr)
+        with open(config.PROJECT_ROOT / "tests/cached_api_responses/weather.xml") as wr:
+            self.weather_response = xmltodict.parse(wr.read())
+
     def test_sanity(self):
         self.assertTrue(True)
 
     def test_generateThenSendEmail(self):
-        with open('../cached_api_responses/moon.json') as mr:
-            moon_response = json.load(mr)
-        with open('../cached_api_responses/tide.json') as tr:
-            tide_response = json.load(tr)
-        with open('../cached_api_responses/weather.xml', 'rb') as wr:
-            weather_response = xmltodict.parse(wr)
-        moon_phase = response_parser.format_moon_phase(moon_response)
-        tide_rows = response_parser._generate_tide_rows(tide_response)
-        weather_rows = response_parser._generate_weather_rows(weather_response)
+        moon_phase = response_parser.format_moon_phase(self.moon_response)
+        tide_rows = response_parser._generate_tide_rows(self.tide_response)
+        weather_rows = response_parser._generate_weather_rows(self.weather_response)
         email_data = {
             'moon_phase': moon_phase,
             'locations': [
