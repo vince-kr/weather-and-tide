@@ -33,15 +33,6 @@
     <div class="report block">
         <h1 class="subtitle">{{location.name}}</h1>
         <table class="table">
-            <!-- {% if location.type == "weather" %}
-            <tr>
-                <th></th>
-                <th>6:00 - 9:00</th>
-                <th>9:00 - 12:00</th>
-                <th>12:00 - 15:00</th>
-                <th>15:00 - 18:00</th>
-            </tr>
-            {% endif %} -->
             {% for header, contents in location.rows %}
             <tr>
                 <th>{{header}}</th>
