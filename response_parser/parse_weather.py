@@ -1,16 +1,12 @@
-import datetime
 from collections import Counter, namedtuple
+import datetime
 import itertools
-from operator import attrgetter
-from typing import Callable, Generator, Literal, Sequence
-
-from pydantic import BaseModel, Field
+from typing import Callable, Generator, Sequence
 
 Selector = namedtuple(
     "Selector", "data_type key symbol conversion", defaults=[lambda x: x]
 )
 
-# noinspection PyArgumentList
 weather_selectors = (
     Selector(
         "temperature",
@@ -31,93 +27,6 @@ weather_row_headers = (
     "Wind direction",
     "Cloud cover",
 )
-
-
-class WeatherWarning(BaseModel):
-    id: int
-    level: Literal["Red", "Orange", "Yellow"]
-    headline: str
-    onset: datetime.datetime
-    expiry: datetime.datetime
-    description: str
-    regions: list[str]
-
-    @property
-    def level_index(self) -> int:
-        return ("Red", "Orange", "Yellow").index(self.level)
-
-def parse_warnings(
-        warnings_response: list[dict],
-        desired_fips: list[str]
-) -> list[WeatherWarning]:
-    warning_objects = (WeatherWarning.model_validate(raw_warning)
-                       for raw_warning in warnings_response)
-    filtered_wgs = (wg for wg in warning_objects
-                    if set(wg.regions) & set(desired_fips))
-    sorted_county = _sort_by_county(filtered_wgs, desired_fips)
-    sorted_level = sorted(sorted_county, key=attrgetter("level_index"))
-    return sorted_level[:4]
-    
-
-def _sort_by_county(
-        warnings: Generator[WeatherWarning, None, None],
-        desired_fips: list[str]
-) -> list[WeatherWarning]:
-    county_order = {code: i for i, code in enumerate(desired_fips)}
-
-    def sort_key(wg: WeatherWarning):
-        valid_codes = (county_order[code] for code in wg.regions
-                       if code in county_order)
-        return min(valid_codes)
-
-    return sorted(warnings, key=sort_key)
-
-
-class MoonPhase(BaseModel):
-    phase: str
-    phaseEmoji: str
-
-
-def format_moon_phase(phase_data: dict) -> str:
-    phase_object = MoonPhase.model_validate(phase_data)
-    return f"{phase_object.phaseEmoji} {phase_object.phase}"
-
-
-class TideForecast(BaseModel):
-    tide_time: datetime.datetime = Field(alias="time")
-    tide_type: Literal["low", "high"] = Field(alias="type")
-
-    @property
-    def fmt_time(self):
-        return self.tide_time.astimezone(tz=None).strftime("%H:%M")
-
-    @property
-    def fmt_type(self):
-        return self.tide_type.capitalize()
-
-class ForecastTableRow:
-    pass
-
-class ForecastTable:
-    header_row: ForecastTableRow
-    data_rows: tuple[ForecastTableRow]
-
-def parse_forecast(forecast: dict) -> zip | tuple:
-    if "weatherdata" in forecast:
-        return _generate_weather_rows(forecast)
-    else:
-        return _generate_tide_rows(forecast)
-
-def _generate_tide_rows(tides: dict) -> tuple:
-    tide_objects = [TideForecast.model_validate(tide) for tide in tides["data"]]
-    return tuple(
-        (
-            tide_datum.fmt_type,
-            tuple([tide_datum.fmt_time])
-        )
-        for tide_datum in tide_objects
-    )
-
 
 def _generate_weather_rows(weather: dict) -> zip:
     forecasts = weather["weatherdata"]["product"]["time"]
@@ -184,8 +93,3 @@ def _avg_and_format(values: Sequence, conversion: Callable) -> str:
     average = sum(float(point) for point in values) / len(values)
     return f"{conversion(average):.1f}"
 
-
-
-def _extract_time_from(datetimestamp: str) -> str:
-    utc_time = datetime.datetime.fromisoformat(datetimestamp)
-    return utc_time.astimezone(tz=None).strftime("%H:%M")
