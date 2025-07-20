@@ -28,7 +28,7 @@ weather_row_headers = (
     "Cloud cover",
 )
 
-def _generate_weather_rows(weather: dict) -> zip:
+def generate_weather_rows(weather: dict) -> zip:
     forecasts = weather["weatherdata"]["product"]["time"]
     temp_wind, precip = _extract_weather_datums(forecasts[:26])
     all_datums = _combine_datums((temp_wind, precip))
@@ -68,9 +68,10 @@ def _combine_datums(datums: tuple) -> tuple:
 
 
 def _calculate_hours(current_time: datetime.datetime) -> tuple[str, ...]:
-    first_hour = current_time.hour
-    hours = (h for h in range(first_hour, first_hour+12, 3))
-    hours_fmt = (f"{hour}:00 - {hour+3}:00" for hour in hours)
+    datetime_objects = ((current_time + datetime.timedelta(hours=i))
+                         for i in (0, 3, 6, 9, 12))
+    hours_fmt = (f"{start.hour}:00 - {stop.hour}:00"
+                 for start, stop in itertools.pairwise(datetime_objects))
     return tuple(hours_fmt)
 
 

@@ -4,7 +4,7 @@ import unittest
 import xmltodict
 
 import config
-import response_parser
+from response_parser import parse_weather
 
 
 # noinspection PyArgumentList
@@ -85,7 +85,7 @@ class TestWeather(unittest.TestCase):
     def test_givenResponseAsDict_returnPertinentDataPoints(self):
         input_data = [{"location": count} for count in range(10)]
         expected = (0, 2, 4, 6), (3, 5, 7, 9)
-        actual = response_parser._extract_weather_datums(input_data)
+        actual = parse_weather._extract_weather_datums(input_data)
         self.assertEqual(expected, actual)
 
     def test_givenTwoTuplesOfDicts_returnSingleTupleCombined(self):
@@ -107,7 +107,7 @@ class TestWeather(unittest.TestCase):
                 "precipitation": {"@value": "4"},
             },
         )
-        actual = response_parser._combine_datums(double_tuple)
+        actual = parse_weather._combine_datums(double_tuple)
         self.assertEqual(expected, actual)
 
     def test_givenSixTenAm_return6_9_12_15(self):
@@ -117,54 +117,64 @@ class TestWeather(unittest.TestCase):
             "12:00 - 15:00",
             "15:00 - 18:00",
         )
-        actual = response_parser._calculate_hours(datetime.datetime(2025, 7, 16, 6, 10))
+        actual = parse_weather._calculate_hours(datetime.datetime(2025, 7, 16, 6, 10))
+        self.assertEqual(expected, actual)
+
+    def test_givenSixTenPm_return18_21_0_3(self):
+        expected = (
+            "18:00 - 21:00",
+            "21:00 - 0:00",
+            "0:00 - 3:00",
+            "3:00 - 6:00",
+        )
+        actual = parse_weather._calculate_hours(datetime.datetime(2025, 7, 16, 18, 10))
         self.assertEqual(expected, actual)
 
     def test_givenThrupleOfData_returnAverageOfNumericalFields(self):
-        selector = response_parser.Selector(
+        selector = parse_weather.Selector(
             data_type="temperature", key="@unit", symbol="° C"
         )
         input_thruple = self.input_data_weather[0]
         expected = "13.4° C"
-        actual = response_parser._average_value(input_thruple, selector)
+        actual = parse_weather._average_value(input_thruple, selector)
         self.assertEqual(expected, actual)
 
     def test_givenHighPrecisionFloat_returnOneDecimalStr(self):
         expected = "3.5"
-        actual = response_parser._avg_and_format(
+        actual = parse_weather._avg_and_format(
             (2.12345, 3.56789, 4.86424), lambda x: x
         )
         self.assertEqual(expected, actual)
 
     def test_givenMetresPerSecond_convertKmPerHour(self):
         expected = "21.6"
-        actual = response_parser._avg_and_format((5, 6, 7), lambda x: x * 3.6)
+        actual = parse_weather._avg_and_format((5, 6, 7), lambda x: x * 3.6)
         self.assertEqual(expected, actual)
 
     def test_givenThrupleOfData_returnMostCommonString(self):
-        selector = response_parser.Selector("windDirection", "@name", "")
+        selector = parse_weather.Selector("windDirection", "@name", "")
         input_thruple = self.input_data_weather[0]
         expected = "N"
-        actual = response_parser._average_value(input_thruple, selector)
+        actual = parse_weather._average_value(input_thruple, selector)
         self.assertEqual(expected, actual)
 
     def test_givenCollectionOfThruplesOfData_returnTupleOfValues(self):
-        selector = response_parser.Selector("temperature", "@unit", "° C")
+        selector = parse_weather.Selector("temperature", "@unit", "° C")
         expected = (
             "13.4° C",
             "13.4° C",
             "13.4° C",
         )
         actual = tuple(
-            response_parser._average_value(batch, selector)
+            parse_weather._average_value(batch, selector)
             for batch in self.input_data_weather
         )
         self.assertEqual(expected, actual)
 
     def test_givenMultipleSelectors_returnMultipleTuples(self):
         selectors = (
-            response_parser.Selector("temperature", "@unit", "° C"),
-            response_parser.Selector("windDirection", "@name", ""),
+            parse_weather.Selector("temperature", "@unit", "° C"),
+            parse_weather.Selector("windDirection", "@name", ""),
         )
         expected = (
             (
@@ -182,7 +192,7 @@ class TestWeather(unittest.TestCase):
         for sel in selectors:
             results.append(
                 tuple(
-                    response_parser._average_value(batch, sel)
+                    parse_weather._average_value(batch, sel)
                     for batch in self.input_data_weather
                 )
             )
@@ -191,7 +201,7 @@ class TestWeather(unittest.TestCase):
 
     def test_parseEndToEnd(self):
         expected = self.expected_formatting
-        forecast_fmt = response_parser.parse_forecast(self.response)
+        forecast_fmt = parse_weather.generate_weather_rows(self.response)
         actual = tuple(row_data for _, row_data in forecast_fmt)
         # self.assertEqual(expected, actual)
 
