@@ -4,52 +4,55 @@ import json
 import unittest
 
 import xmltodict
+import pytest
 
 import config
 import response_parser
 
+@pytest.fixture
+def timestamp():
+    return "2024-09-26T18:31:00+00:00"
 
-class TestTide(unittest.TestCase):
-    def setUp(self):
-        self.timestamp = "2024-09-26T18:31:00+00:00"
-        with open(config.PROJECT_ROOT / "tests/cached_api_responses/tide.json") as tf:
-            self.response = json.load(tf)
-        self.expected_formatting = (
-            (
-                "Low",
-                ("05:17",),
-            ),
-            (
-                "High",
-                ("11:46",),
-            ),
-            (
-                "Low",
-                ("17:32",),
-            ),
-            (
-                "High",
-                ("23:57",),
-            ),
-        )
+@pytest.fixture
+def response():
+    with open(config.PROJECT_ROOT / "tests/cached_api_responses/tide.json") as tf:
+        return json.load(tf)
 
-    def test_sanity(self):
-        self.assertTrue(True)
+@pytest.fixture
+def expected_formatting():
+    return (
+        (
+            "Low",
+            ("05:17",),
+        ),
+        (
+            "High",
+            ("11:46",),
+        ),
+        (
+            "Low",
+            ("17:32",),
+        ),
+        (
+            "High",
+            ("23:57",),
+        ),
+    )
 
-    def test_givenBigDateTimeString_extractOnlyTimeInLocalZone(self):
-        expected = "19:31"
-        actual = response_parser._extract_time_from(self.timestamp)
-        self.assertEqual(expected, actual)
+def test_givenBigDateTimeString_extractOnlyTimeInLocalZone(timestamp):
+    expected = "19:31"
+    actual = response_parser._extract_time_from(timestamp)
+    assert expected == actual
 
-    def test_givenResponseAsDict_returnIterableOfTuples(self):
-        expected = self.expected_formatting
-        actual = response_parser._generate_tide_rows(self.response)
-        self.assertEqual(expected, actual)
+def test_givenResponseAsDict_returnIterableOfTuples(expected_formatting, response):
+    expected = expected_formatting
+    actual = response_parser._generate_tide_rows(response)
+    assert expected == actual
 
-    def test_parseEndToEnd(self):
-        expected = self.expected_formatting
-        actual = response_parser.parse_forecast(self.response)
-        self.assertEqual(expected, actual)
+def test_parseEndToEnd(expected_formatting, response):
+    expected = expected_formatting
+    actual = response_parser.parse_forecast(response)
+    assert expected == actual
 
 
 # noinspection PyArgumentList
