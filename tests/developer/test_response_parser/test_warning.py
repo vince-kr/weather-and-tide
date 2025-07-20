@@ -2,7 +2,7 @@ import json
 import unittest
 
 import config
-import response_parser
+from response_parser import parse_warning
 
 
 class TestWarning(unittest.TestCase):
@@ -44,14 +44,14 @@ class TestWarning(unittest.TestCase):
 
     def test_givenTwoWarningsAndOneDesired_returnOne(self):
         desired_county_codes = ["EI02"]
-        parsed_warnings = response_parser.parse_warnings(
+        parsed_warnings = parse_warning.generate_warnings(
             [self.EI02, self.EI03],
             desired_county_codes
         )
         self.assertEqual(len(parsed_warnings), 1)
 
     def test_givenTwoWarningsOfDifferentLevel_sortBySeverity(self):
-        sorted_warnings = response_parser.parse_warnings(
+        sorted_warnings = parse_warning.generate_warnings(
             [self.yellow, self.orange],
             ["EI02"])
         expected = ["Orange", "Yellow"]
@@ -59,7 +59,7 @@ class TestWarning(unittest.TestCase):
         self.assertEqual(expected, actual)
 
     def test_givenTwoWarningsOfSameLevel_sortByCounty(self):
-        sorted_warnings = response_parser.parse_warnings(
+        sorted_warnings = parse_warning.generate_warnings(
             [self.EI02, self.EI03],
             ["EI03", "EI02"]
         )
@@ -68,7 +68,7 @@ class TestWarning(unittest.TestCase):
         self.assertEqual(expected, actual)
 
     def test_givenWarningsWithMultipleRegions_selectCorrectWarnings(self):
-        sorted_filtered_warnings = response_parser.parse_warnings(
+        sorted_filtered_warnings = parse_warning.generate_warnings(
             [self.many_regions],
             ["EI03"]
         )
@@ -78,7 +78,7 @@ class TestWarning(unittest.TestCase):
         self.assertEqual(expected, actual)
 
     def test_givenWarningsMultipleLevelsCounties_sortCountyThenLevel(self):
-        sorted_filtered_warnings = response_parser.parse_warnings(
+        sorted_filtered_warnings = parse_warning.generate_warnings(
             [self.yellow, self.orange, self.EI02, self.EI03],
             ["EI03", "EI02"]
         )

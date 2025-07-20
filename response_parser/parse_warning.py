@@ -18,7 +18,7 @@ class WeatherWarning(BaseModel):
     def level_index(self) -> int:
         return ("Red", "Orange", "Yellow").index(self.level)
 
-def parse_warnings(
+def generate_warnings(
         warnings_response: list[dict],
         desired_fips: list[str]
 ) -> list[WeatherWarning]:

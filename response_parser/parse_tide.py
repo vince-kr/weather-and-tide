@@ -15,7 +15,7 @@ class TideForecast(BaseModel):
     def fmt_type(self):
         return self.tide_type.capitalize()
 
-def _generate_tide_rows(tides: dict) -> tuple:
+def generate_tide_rows(tides: dict) -> tuple:
     tide_objects = [TideForecast.model_validate(tide) for tide in tides["data"]]
     return tuple(
         (

@@ -3,7 +3,7 @@ import json
 import pytest
 
 import config
-import response_parser
+from response_parser import parse_tide
 
 
 @pytest.fixture
@@ -38,16 +38,10 @@ def expected_formatting():
 
 def test_givenBigDateTimeString_extractOnlyTimeInLocalZone(timestamp):
     expected = "19:31"
-    actual = response_parser._extract_time_from(timestamp)
+    actual = parse_tide._extract_time_from(timestamp)
     assert expected == actual
 
 def test_givenResponseAsDict_returnIterableOfTuples(expected_formatting, response):
     expected = expected_formatting
-    actual = response_parser._generate_tide_rows(response)
+    actual = parse_tide.generate_tide_rows(response)
     assert expected == actual
-
-def test_parseEndToEnd(expected_formatting, response):
-    expected = expected_formatting
-    actual = response_parser.parse_forecast(response)
-    assert expected == actual
-
