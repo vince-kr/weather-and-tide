@@ -22,8 +22,8 @@ class TestSendEmail(unittest.TestCase):
 
     def test_generateThenSendEmail(self):
         moon_phase = response_parser.format_moon_phase(self.moon_response)
-        tide_rows = response_parser._generate_tide_rows(self.tide_response)
-        weather_rows = response_parser._generate_weather_rows(self.weather_response)
+        tide_rows = response_parser.parse_forecast(self.tide_response)
+        weather_rows = response_parser.parse_forecast(self.weather_response)
         email_data = {
             'moon_phase': moon_phase,
             'locations': [

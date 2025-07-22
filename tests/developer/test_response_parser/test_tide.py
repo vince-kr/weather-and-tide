@@ -36,12 +36,7 @@ def expected_formatting():
         ),
     )
 
-def test_givenBigDateTimeString_extractOnlyTimeInLocalZone(timestamp):
-    expected = "19:31"
-    actual = parse_tide._extract_time_from(timestamp)
-    assert expected == actual
-
-def test_givenResponseAsDict_returnIterableOfTuples(expected_formatting, response):
+def test_given_response_as_dict_return_iterable_of_tuples(expected_formatting, response):
     expected = expected_formatting
     actual = parse_tide.generate_tide_rows(response)
     assert expected == actual

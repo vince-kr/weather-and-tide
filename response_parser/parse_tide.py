@@ -24,7 +24,3 @@ def generate_tide_rows(tides: dict) -> tuple:
         )
         for tide_datum in tide_objects
     )
-
-def _extract_time_from(datetimestamp: str) -> str:
-    utc_time = datetime.datetime.fromisoformat(datetimestamp)
-    return utc_time.astimezone(tz=None).strftime("%H:%M")
