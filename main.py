@@ -27,7 +27,8 @@ warnings_response = api_caller.fetch_warnings()
 weather_warnings = response_parser.parse_warnings(warnings_response, desired_counties)
 
 # Fetch the current phase of the moon
-moon_phase = api_caller.fetch_moon_phase(APIVERVE_API_KEY)
+# moon_phase = api_caller.fetch_moon_phase(APIVERVE_API_KEY)
+moon_phase = {}
 if moon_phase:
     moon_phase_fmt = response_parser.format_moon_phase(moon_phase)
 else:
