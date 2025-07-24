@@ -43,13 +43,12 @@ def test_givenSixTenPm_return18_21_0_3():
     actual = parse_weather._calculate_hours(datetime.datetime(2025, 7, 16, 18, 10))
     assert expected == actual
 
-def test_givenCachedResponse_returnWeatherRows(cached_response):
-    expected = (
-        "21:00 - 0:00",
-        "0:00 - 3:00",
-        "3:00 - 6:00",
-        "6:00 - 9:00",
-    ), (
+@pytest.fixture
+def current_hours():
+    return parse_weather._calculate_hours(datetime.datetime.now())
+
+def test_givenCachedResponse_returnWeatherRows(cached_response, current_hours):
+    expected = current_hours, (
         "11.6° C",
         "12.3° C",
         "12.5° C",

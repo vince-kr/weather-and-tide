@@ -184,15 +184,9 @@ def _split_by_index(all_data: Sequence) -> tuple:
 def _calculate_hours(current_time: datetime.datetime) -> tuple[str, ...]:
     datetime_objects = ((current_time + datetime.timedelta(hours=i))
                          for i in (0, 3, 6, 9, 12))
-    hours_fmt = (f"{start.hour}:00 - {stop.hour}:00"
+    hours_fmt = tuple(f"{start.hour}:00 - {stop.hour}:00"
                  for start, stop in itertools.pairwise(datetime_objects))
-    return tuple(hours_fmt)
-
-
-def _average_value(data: ForecastBatch, selector: Selector) -> str:
-    field = getattr(data, selector.data_type)
-    value = getattr(field, selector.key)
-    return f"{value}{selector.symbol}"
+    return hours_fmt
 
 
 def _batched(data: Iterable[T], length: int) -> Generator[tuple[T, ...], Any, None]:
