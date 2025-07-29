@@ -26,12 +26,13 @@ def generate_warnings(
                        for raw_warning in warnings_response)
     filtered_wgs = (wg for wg in warning_objects
                     if set(wg.regions) & set(desired_fips))
-    sorted_county = _sort_by_county(filtered_wgs, desired_fips)
+    sorted_county = sort_by_county(filtered_wgs, desired_fips)
     sorted_level = sorted(sorted_county, key=attrgetter("level_index"))
+    for wg in sorted_level:
+        wg.description = format_warning_impact(wg.description)
     return sorted_level[:4]
 
-
-def _sort_by_county(
+def sort_by_county(
         warnings: Generator[WeatherWarning, None, None],
         desired_fips: list[str]
 ) -> list[WeatherWarning]:
@@ -43,3 +44,6 @@ def _sort_by_county(
         return min(valid_codes)
 
     return sorted(warnings, key=sort_key)
+
+def format_warning_impact(impact: str) -> str:
+    return impact.replace(" •", "\n•")
