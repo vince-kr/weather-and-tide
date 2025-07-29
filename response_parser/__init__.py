@@ -12,7 +12,9 @@ def parse_forecast(forecast: dict) -> zip | tuple:
     else:
         return parse_tide.generate_tide_rows(forecast)
 
-def parse_warnings(warnings: list[dict], desired_counties: list[str]) -> list:
+def parse_warnings(
+        warnings: list[dict],
+        desired_counties: list[str]) -> list[parse_warning.WeatherWarning]:
     return parse_warning.generate_warnings(warnings, desired_counties)
 
 def format_moon_phase(moon_phase: dict) -> str:
