@@ -29,7 +29,7 @@ class TestResponseParse(unittest.TestCase):
             self.tide = json.load(tc)
 
     def test_generateFullEmail(self):
-        warnings = response_parser.parse_warnings(self.warnings, self.desired_counties)
+        warnings = response_parser.parse_warnings(self.warnings)
         moon_phase_fmt = response_parser.format_moon_phase(self.moon)
         fmt_rows = [
             response_parser.parse_forecast(forecast)

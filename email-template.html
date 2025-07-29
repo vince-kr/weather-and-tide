@@ -18,7 +18,12 @@
                     <p>To: {{ warning.expiry.strftime("%-d %B, %H:%M") }}</p>
                 </div>
                 <div class="column">
-                    <p>{{warning.description}}</p>
+                    <p>{{warning.text_description}}</p>
+                    <ul>
+                        {% for impact in warning.impacts %}
+                        <li>{{ impact }}</li>
+                        {% endfor %}
+                    </ul>
                 </div>
             </div>
         </div>
@@ -44,6 +49,22 @@
         </table>
     </div>
     {% endfor %}
+    <div class="legal block">
+        <h1 class="subtitle">Legal</h1>
+        <div class="list">
+            <div class="list-item">Copyright Met Éireann</div>
+            <div class="list-item">Source <a href="https://www.met.ie/">www.met.ie</a></div>
+            <div class="list-item">This data is published under a Creative Commons Attribution 4.0
+                International (CC BY 4.0). <a href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a>
+            </div>
+            <div class="list-item">Met Éireann does not accept any liability whatsoever for any error or
+                omission in the
+                data,
+                their availability, or for any loss or damage arising from their use.
+            </div>
+            <div class="list-item">This material has been modified from the original</div>
+        </div>
+    </div>
 </div>
 </body>
 </html>
