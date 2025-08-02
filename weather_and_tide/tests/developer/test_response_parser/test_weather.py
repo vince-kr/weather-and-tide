@@ -3,13 +3,13 @@ import datetime
 import pytest
 import xmltodict
 
-import config
-from response_parser import parse_weather
+from weather_and_tide import config
+from weather_and_tide.response_parser import parse_weather
 
 
 @pytest.fixture
 def cached_response():
-    with open(config.PROJECT_ROOT / "tests/cached_api_responses/weather.xml") as wf:
+    with open(config.PACKAGE_ROOT / "tests/cached_api_responses/weather.xml") as wf:
         response = xmltodict.parse(wf.read())
     return response
 

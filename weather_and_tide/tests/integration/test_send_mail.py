@@ -1,20 +1,23 @@
 import json
 import unittest
+
 import xmltodict
 
-import config
-import email_generator
-import mailer
-import response_parser
+from weather_and_tide import (
+    config,
+    email_generator,
+    mailer,
+    response_parser
+)
 
 
 class TestSendEmail(unittest.TestCase):
     def setUp(self):
-        with open(config.PROJECT_ROOT / "tests/cached_api_responses/moon.json") as mr:
+        with open(config.PACKAGE_ROOT / "tests/cached_api_responses/moon.json") as mr:
             self.moon_response = json.load(mr)
-        with open(config.PROJECT_ROOT / "tests/cached_api_responses/tide.json") as tr:
+        with open(config.PACKAGE_ROOT / "tests/cached_api_responses/tide.json") as tr:
             self.tide_response = json.load(tr)
-        with open(config.PROJECT_ROOT / "tests/cached_api_responses/weather.xml") as wr:
+        with open(config.PACKAGE_ROOT / "tests/cached_api_responses/weather.xml") as wr:
             self.weather_response = xmltodict.parse(wr.read())
 
     def test_sanity(self):

@@ -2,7 +2,7 @@ import datetime
 
 import pytest
 
-import api_caller
+from weather_and_tide import api_caller
 
 @pytest.fixture
 def dates():

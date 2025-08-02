@@ -2,8 +2,8 @@ import json
 
 import pytest
 
-import config
-from response_parser import parse_tide
+from weather_and_tide import config
+from weather_and_tide.response_parser import parse_tide
 
 
 @pytest.fixture
@@ -12,7 +12,7 @@ def timestamp():
 
 @pytest.fixture
 def response():
-    with open(config.PROJECT_ROOT / "tests/cached_api_responses/tide.json") as tf:
+    with open(config.PACKAGE_ROOT / "tests/cached_api_responses/tide.json") as tf:
         return json.load(tf)
 
 @pytest.fixture

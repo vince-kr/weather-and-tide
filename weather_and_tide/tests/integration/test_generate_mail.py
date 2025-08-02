@@ -1,26 +1,23 @@
 import json
 import unittest
 
-import config
-import email_generator
-import response_parser
-
 import xmltodict
+
+from weather_and_tide import (
+    config,
+    email_generator,
+    response_parser
+)
 
 
 class TestResponseParse(unittest.TestCase):
     def setUp(self):
         config_file = config.PROJECT_ROOT / "example.config.yaml"
         self.user_config = config.load_config(config_file)
-        with open(config.PROJECT_ROOT / "county_to_fips.json") as cf:
-            COUNTIES_TO_FIPS = json.load(cf)
-        self.desired_counties = [COUNTIES_TO_FIPS[name]
-                                 for name in self.user_config.county_warnings]
-        cache_files = config.PROJECT_ROOT / "tests/cached_api_responses"
+        self.desired_counties = self.user_config.county_warnings
+        cache_files = config.PACKAGE_ROOT / "tests/cached_api_responses"
         with open(cache_files / "warnings.json") as wc:
             self.warnings = json.load(wc)
-        with open(config.PROJECT_ROOT / "county_to_fips.json") as ff:
-            self.counties_to_fips = json.load(ff)
         with open(cache_files / "moon.json") as mc:
             self.moon = json.load(mc)
         with open(cache_files / "weather.xml", "rb") as wc:
@@ -50,6 +47,6 @@ class TestResponseParse(unittest.TestCase):
             email_data["locations"].append(location_summary)
 
         html_email = email_generator.generate_email(email_data)
-        email_file = config.PROJECT_ROOT / "tests/integration/generated_email.html"
+        email_file = config.PACKAGE_ROOT / "tests/integration/generated_email.html"
         with open(email_file, "w") as ef:
             ef.write(html_email)

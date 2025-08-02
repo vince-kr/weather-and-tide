@@ -1,8 +1,8 @@
 from jinja2 import Template
 
-import config  # TODO
+from weather_and_tide import config
 
-with open(config.PROJECT_ROOT / "email-template.html") as wtt:
+with open(config.PACKAGE_ROOT / "email-template.html") as wtt:
     template = Template(wtt.read(), trim_blocks=True, lstrip_blocks=True)
 
 

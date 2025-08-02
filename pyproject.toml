@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "weather-and-tide"
+version = "0.1.0"
+description = "A project to gather local weather and tide forecasts for configurable locations and send them via email."
+authors = ["Pepijn Krijnsen <vince@krijnsen.com>"]
+readme = "README.md"
+packages = [{ include = "weather_and_tide" }]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pydantic = "^2.5.2"
+requests = "^2.31.0"
+jinja2 = "^3.1.2"
+pyyaml = "^6.0.1"
+python-dotenv = "^1.0.0"
+xmltodict = "^0.14.2"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.3"
+mypy = "^1.16.1"
+poetry-core = "^2.1.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

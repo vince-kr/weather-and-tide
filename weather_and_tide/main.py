@@ -3,15 +3,16 @@
 ########################################################
 from concurrent.futures import ThreadPoolExecutor
 import datetime
-import json
 from functools import partial
 from pathlib import Path
 
-import api_caller
-import config
-import email_generator
-import mailer
-import response_parser
+from weather_and_tide import (
+    api_caller,
+    config,
+    email_generator,
+    mailer,
+    response_parser,
+)
 
 # Load configuration
 APIVERVE_API_KEY = config.APIVERVE_API_KEY
@@ -19,12 +20,11 @@ STORMGLASS_API_KEY = config.STORMGLASS_API_KEY
 user_config: config.Config = config.load_config(Path(config.PROJECT_ROOT / "config.yaml"))
 
 # Fetch weather warnings
-with open(config.PROJECT_ROOT / "county_to_fips.json") as cf:
-    counties_to_fips: dict[str, str] = json.load(cf)
-desired_counties: list[str] = [counties_to_fips[name]
-                               for name in user_config.county_warnings]
 warnings_response = api_caller.fetch_warnings()
-weather_warnings = response_parser.parse_warnings(warnings_response, desired_counties)
+if warnings_response:
+    weather_warnings = response_parser.parse_warnings(warnings_response)
+else:
+    weather_warnings = []
 
 # Fetch the current phase of the moon
 # moon_phase = api_caller.fetch_moon_phase(APIVERVE_API_KEY)
