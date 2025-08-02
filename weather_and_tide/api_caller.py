@@ -1,8 +1,9 @@
 from datetime import date, timedelta
+
 import requests
 import xmltodict
 
-from config import Location  # TODO
+from weather_and_tide.config import Location
 
 MOON_URL = "https://api.apiverve.com/v1/moonphases?today=true"
 TIDES_URL = 'https://api.stormglass.io/v2/tide/extremes/point'
@@ -16,18 +17,22 @@ def fetch_moon_phase(api_key: str) -> dict | None:
             'x-api-key': api_key
         }
     }
-    response = requests.get(**request_object)
-    if response.ok:
-        return response.json()["data"]
+    try:
+        response = requests.get(**request_object)
+        if response.ok:
+            return response.json()["data"]
+    except requests.exceptions.RequestException:
+        pass
     return None
 
 def fetch_warnings() -> list[dict] | None:
-    request_object = {
-        'url': WEATHER_WARNING_URL
-    }
-    response = requests.get(**request_object)
-    if response.ok:
-        return response.json()
+    request_object = {'url': WEATHER_WARNING_URL}
+    try:
+        response = requests.get(**request_object)
+        if response.ok:
+            return response.json()
+    except requests.exceptions.RequestException:
+        pass
     return None
 
 def fetch_forecast(location: Location, api_key: str) -> dict | None:
@@ -69,9 +74,12 @@ def _build_tide_request(
 
 def _fetch_weather_forecast(coords: tuple[float, float]) -> dict | None:
     request_object = _build_weather_request(WEATHER_URL, coords)
-    response = requests.get(**request_object)
-    if response.ok:
-        return xmltodict.parse(response.content)
+    try:
+        response = requests.get(**request_object)
+        if response.ok:
+            return xmltodict.parse(response.content)
+    except requests.exceptions.RequestException:
+        pass
     return None
 
 def _fetch_tide_forecast(
@@ -79,7 +87,10 @@ def _fetch_tide_forecast(
         api_key: str
 ) -> dict | None:
     request_object = _build_tide_request(TIDES_URL, coords, api_key)
-    response = requests.get(**request_object)
-    if response.ok:
-        return response.json()
+    try:
+        response = requests.get(**request_object)
+        if response.ok:
+            return response.json()
+    except requests.exceptions.RequestException:
+        pass
     return None

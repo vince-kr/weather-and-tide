@@ -1,10 +1,12 @@
-import dotenv
+import json
 import os
-import requests
 import unittest
+
+import dotenv
+import requests
 import xmltodict
 
-import api_caller
+from weather_and_tide import api_caller
 
 dotenv.load_dotenv()
 
@@ -33,12 +35,11 @@ class TestApiResponses(unittest.TestCase):
         self.assertTrue(len(body['data']) > 0)
 
     def test_callWeatherWarningApi_confirmContents(self):
-        request_object = {
-            'url': api_caller.WEATHER_WARNING_URL
-        }
+        request_object = {'url': api_caller.WEATHER_WARNING_URL}
         response = requests.get(**request_object)
         self.assertTrue(response.ok)
-        body = response.json()[0]
+        clean_text = response.text.replace("\t", " ")
+        body = json.loads(clean_text)[0]
         self.assertTrue("severity" in body)
         self.assertTrue(len(body["regions"]) > 0)
 
