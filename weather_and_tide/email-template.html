@@ -17,11 +17,11 @@
                     <p>From: {{ warning.onset.strftime("%-d %B, %H:%M") }}</p>
                     <p>To: {{ warning.expiry.strftime("%-d %B, %H:%M") }}</p>
                 </div>
-                <div class="column">
+                <div class="column content">
                     <p>{{warning.text_description}}</p>
-                    <ul>
+                    <ul class="list">
                         {% for impact in warning.impacts %}
-                        <li>{{ impact }}</li>
+                        <li class="list-item">{{ impact }}</li>
                         {% endfor %}
                     </ul>
                 </div>
