@@ -15,9 +15,10 @@ from weather_and_tide import (
 )
 
 # Load configuration
-APIVERVE_API_KEY = config.APIVERVE_API_KEY
 STORMGLASS_API_KEY = config.STORMGLASS_API_KEY
-user_config: config.Config = config.load_config(Path(config.PROJECT_ROOT / "config.yaml"))
+user_config: config.Config = config.load_config(Path(
+    config.PROJECT_ROOT / "config.yaml")
+)
 
 # Fetch weather warnings
 warnings_response = api_caller.fetch_warnings()
@@ -25,14 +26,6 @@ if warnings_response:
     weather_warnings = response_parser.parse_warnings(warnings_response)
 else:
     weather_warnings = []
-
-# Fetch the current phase of the moon
-# moon_phase = api_caller.fetch_moon_phase(APIVERVE_API_KEY)
-moon_phase = {}
-if moon_phase:
-    moon_phase_fmt = response_parser.format_moon_phase(moon_phase)
-else:
-    moon_phase_fmt = "Unknown"
 
 # Fetch and parse forecasts on separate threads
 with ThreadPoolExecutor() as executor:
@@ -43,7 +36,6 @@ with ThreadPoolExecutor() as executor:
 # Generate email
 email_data: dict[str, list] = {
     "warnings": weather_warnings,
-    "moon_phase": moon_phase_fmt,
     "locations": [],
 }
 for location, row_data in zip(user_config.locations, fmt_rows):

@@ -18,8 +18,6 @@ class TestResponseParse(unittest.TestCase):
         cache_files = config.PACKAGE_ROOT / "tests/cached_api_responses"
         with open(cache_files / "warnings.json") as wc:
             self.warnings = json.load(wc)
-        with open(cache_files / "moon.json") as mc:
-            self.moon = json.load(mc)
         with open(cache_files / "weather.xml", "rb") as wc:
             self.weather = xmltodict.parse(wc)
         with open(cache_files / "tide.json") as tc:
@@ -27,7 +25,6 @@ class TestResponseParse(unittest.TestCase):
 
     def test_generateFullEmail(self):
         warnings = response_parser.parse_warnings(self.warnings)
-        moon_phase_fmt = response_parser.format_moon_phase(self.moon)
         fmt_rows = [
             response_parser.parse_forecast(forecast)
             for forecast in (self.weather, self.tide)
@@ -35,7 +32,6 @@ class TestResponseParse(unittest.TestCase):
 
         email_data = {
             "warnings": warnings,
-            "moon_phase": moon_phase_fmt,
             "locations": [],
         }
         for location, row_data in zip(self.user_config.locations, fmt_rows):

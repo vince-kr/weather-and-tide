@@ -30,10 +30,6 @@
         {% endfor %}
     </div>
     {% endif %}
-    <div class="moon block">
-        <h1 class="subtitle">Moon Phase</h1>
-        <p>{{ moon_phase }}</p>
-    </div>
     {% for location in locations %}
     <div class="report block">
         <h1 class="subtitle">{{location.name}}</h1>
@@ -54,10 +50,13 @@
         <div class="list">
             <div class="list-item">Copyright Met Éireann</div>
             <div class="list-item">Source <a href="https://www.met.ie/">www.met.ie</a></div>
-            <div class="list-item">This data is published under a Creative Commons Attribution 4.0
-                International (CC BY 4.0). <a href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a>
+            <div class="list-item">This data is published under a Creative Commons Attribution
+                4.0
+                International (CC BY 4.0). <a
+                        href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a>
             </div>
-            <div class="list-item">Met Éireann does not accept any liability whatsoever for any error or
+            <div class="list-item">Met Éireann does not accept any liability whatsoever for any
+                error or
                 omission in the
                 data,
                 their availability, or for any loss or damage arising from their use.

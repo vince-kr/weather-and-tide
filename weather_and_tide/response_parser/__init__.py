@@ -1,6 +1,5 @@
 from weather_and_tide import config
 from weather_and_tide.response_parser import (
-    parse_moon_phase,
     parse_tide,
     parse_warning,
     parse_weather
@@ -20,6 +19,3 @@ def parse_warnings(warnings_response: list[dict]) -> parse_warning.WeatherWarnin
     warnings_list = parse_warning.WeatherWarningsList(warning_objects, user_config.county_warnings)
     fs_warnings = warnings_list.filter_by_county().sort_by_county().sort_by_severity()
     return fs_warnings[:4]
-
-def format_moon_phase(moon_phase: dict) -> str:
-    return parse_moon_phase.format_moon_phase(moon_phase)

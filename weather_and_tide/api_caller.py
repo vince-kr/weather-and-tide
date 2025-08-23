@@ -5,25 +5,9 @@ import xmltodict
 
 from weather_and_tide.config import Location
 
-MOON_URL = "https://api.apiverve.com/v1/moonphases?today=true"
-TIDES_URL = 'https://api.stormglass.io/v2/tide/extremes/point'
-WEATHER_URL = 'http://openaccess.pf.api.met.ie/metno-wdb2ts/locationforecast'
 WEATHER_WARNING_URL = "https://www.met.ie/Open_Data/json/warning_IRELAND.json"
-
-def fetch_moon_phase(api_key: str) -> dict | None:
-    request_object = {
-        'url': MOON_URL,
-        'headers': {
-            'x-api-key': api_key
-        }
-    }
-    try:
-        response = requests.get(**request_object)
-        if response.ok:
-            return response.json()["data"]
-    except requests.exceptions.RequestException:
-        pass
-    return None
+WEATHER_URL = 'http://openaccess.pf.api.met.ie/metno-wdb2ts/locationforecast'
+TIDES_URL = 'https://api.stormglass.io/v2/tide/extremes/point'
 
 def fetch_warnings() -> list[dict] | None:
     request_object = {'url': WEATHER_WARNING_URL}

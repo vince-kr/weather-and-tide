@@ -13,8 +13,6 @@ from weather_and_tide import (
 
 class TestSendEmail(unittest.TestCase):
     def setUp(self):
-        with open(config.PACKAGE_ROOT / "tests/cached_api_responses/moon.json") as mr:
-            self.moon_response = json.load(mr)
         with open(config.PACKAGE_ROOT / "tests/cached_api_responses/tide.json") as tr:
             self.tide_response = json.load(tr)
         with open(config.PACKAGE_ROOT / "tests/cached_api_responses/weather.xml") as wr:
@@ -24,11 +22,9 @@ class TestSendEmail(unittest.TestCase):
         self.assertTrue(True)
 
     def test_generateThenSendEmail(self):
-        moon_phase = response_parser.format_moon_phase(self.moon_response)
         tide_rows = response_parser.parse_forecast(self.tide_response)
         weather_rows = response_parser.parse_forecast(self.weather_response)
         email_data = {
-            'moon_phase': moon_phase,
             'locations': [
                 {
                     "name": "Bray Head",
