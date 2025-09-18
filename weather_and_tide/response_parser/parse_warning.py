@@ -45,7 +45,7 @@ class WeatherWarningsList(UserList[WeatherWarning]):
         return WeatherWarningsList(
             [wg for wg in self
              if set(wg.regions) & set(self.fips_list)],
-            self.fips_list,
+            self.fips_list
         )
 
     def sort_by_severity(self) -> "WeatherWarningsList":
